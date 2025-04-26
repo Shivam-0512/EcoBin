@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EcoBin - Bin Locations</title>
+    <link rel="stylesheet" href="./dist/output.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" />
+    <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
+    <style>
+        /* Dark mode styles */
+        .dark {
+            background-color: #1a1a1a;
+            color: #ffffff;
+        }
+        .dark .bg-white {
+            background-color: #2d2d2d;
+            color: #ffffff;
+        }
+        .dark .text-gray-900 {
+            color: #ffffff;
+        }
+        .dark .text-gray-600 {
+            color: #d1d1d1;
+        }
+        .dark .text-gray-500 {
+            color: #a0a0a0;
+        }
+        .dark .border-gray-200 {
+            border-color: #404040;
+        }
+        .dark .shadow-md {
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.3);
+        }
+        .dark .bg-swachh-800 {
+            background-color: #1a472a;
+        }
+        .dark .hover\:bg-swachh-700:hover {
+            background-color: #2d5a3f;
+        }
+        .dark .bg-gray-50 {
+            background-color: #1a1a1a;
+        }
+        .dark .bg-gray-100 {
+            background-color: #2d2d2d;
+        }
+        .dark .text-gray-800 {
+            color: #ffffff;
+        }
+    </style>
+</head>
+
+<body class="bg-gray-50">
+    <div class="min-h-screen flex">
+        <div class="bg-swachh-800 text-white w-64 space-y-6 py-7 px-2 absolute inset-y-0 left-0 transform -translate-x-full md:relative md:translate-x-0 transition duration-200 ease-in-out">
+            <div class="flex items-center space-x-2 px-4">
+                <i class="fas fa-trash-alt text-2xl"></i>
+                <span class="text-2xl font-extrabold">EcoBin</span>
+            </div>
+            <nav class="space-y-2">
+                <a href="dashboard.html" class="block py-2.5 px-4 rounded transition duration-200 hover:bg-swachh-700 hover:text-white">
+                    <i class="fas fa-home mr-2"></i>Dashboard
+                </a>
+                <a href="bin-locations.html" class="block py-2.5 px-4 rounded transition duration-200 bg-swachh-700">
+                    <i class="fas fa-map-marker-alt mr-2"></i>Bin Locations
+                </a>
+                <a href="workers.html" class="block py-2.5 px-4 rounded transition duration-200 hover:bg-swachh-700 hover:text-white">
+                    <i class="fas fa-users mr-2"></i>Workers
+                </a>
+                <a href="#" class="block py-2.5 px-4 rounded transition duration-200 hover:bg-swachh-700 hover:text-white">
+                    <i class="fas fa-chart-bar mr-2"></i>Analytics
+                </a>
+                <a href="settings.html" class="block py-2.5 px-4 rounded transition duration-200 hover:bg-swachh-700 hover:text-white">
+                    <i class="fas fa-cog mr-2"></i>Settings
+                </a>
+            </nav>
+        </div>
+
+        <div class="flex-1">
+            <div class="bg-white shadow-lg">
+                <div class="flex items-center justify-between p-4">
+                    <button class="md:hidden text-gray-500 hover:text-gray-600">
+                        <i class="fas fa-bars text-xl"></i>
+                    </button>
+                    <div class="flex items-center space-x-4">
+                        <a href="settings.html" class="flex items-center space-x-2 hover:text-swachh-600 transition-colors duration-200">
+                            <span class="text-gray-800">Admin User</span>
+                            <img class="h-8 w-8 rounded-full" src="https://ui-avatars.com/api/?name=Admin+User&background=22c55e&color=fff" alt="Admin">
+                        </a>
+                        <button id="logoutBtn" class="text-gray-600 hover:text-red-500 transition-colors duration-200">
+                            <i class="fas fa-sign-out-alt text-xl"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="p-6">
+                <h1 class="text-2xl font-semibold text-gray-900 mb-6">Bin Locations</h1>
+
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                    <!-- Bin List -->
+                    <div class="bg-white rounded-lg shadow p-6">
+                        <h2 class="text-xl font-semibold mb-4">Bin List</h2>
+                        <div id="binList" class="space-y-4">
+                            <!-- Bin items will be populated here -->
+                        </div>
+                    </div>
+
+                    <!-- Map View -->
+                    <div class="bg-white rounded-lg shadow p-6">
+                        <h2 class="text-xl font-semibold mb-4">Map View</h2>
+                        <div id="map" class="h-[600px] rounded-lg overflow-hidden"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Initialize sidebar state
+        document.addEventListener('DOMContentLoaded', function() {
+            const sidebar = document.querySelector('.bg-swachh-800');
+            if (window.innerWidth >= 768) { // md breakpoint
+                sidebar.classList.remove('-translate-x-full');
+            }
+        });
+
+        // Toggle sidebar on mobile
+        document.querySelector('button').addEventListener('click', function () {
+            document.querySelector('.bg-swachh-800').classList.toggle('-translate-x-full');
+        });
+
+        // Logout functionality
+        document.getElementById('logoutBtn').addEventListener('click', function () {
+            if (confirm('Are you sure you want to logout?')) {
+                window.location.href = 'index.html';
+            }
+        });
+
+        // Sample bin data (replace with Firebase data later)
+        const bins = [
+            { id: 'BIN001', location: 'Prayagraj Station', status: 'full', lat: 25.4358, lng: 81.8463 },
+            { id: 'BIN002', location: 'Civil Lines', status: 'empty', lat: 25.4589, lng: 81.8523 },
+            { id: 'BIN003', location: 'Katara', status: 'full', lat: 25.4422, lng: 81.8339 },
+            { id: 'BIN004', location: 'George Town', status: 'empty', lat: 25.4497, lng: 81.8347 },
+            { id: 'BIN005', location: 'Katra', status: 'full', lat: 25.4389, lng: 81.8456 }
+        ];
+
+        // Initialize map
+        function initMap() {
+            const map = L.map('map').setView([25.4358, 81.8463], 13);
+            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                attribution: '© OpenStreetMap contributors'
+            }).addTo(map);
+
+            // Add markers for each bin
+            bins.forEach(bin => {
+                const color = bin.status === 'full' ? 'red' : 'green';
+                const marker = L.marker([bin.lat, bin.lng])
+                    .bindPopup(`
+                        <strong>Bin ${bin.id}</strong><br>
+                        Location: ${bin.location}<br>
+                        Status: ${bin.status}
+                    `)
+                    .addTo(map);
+            });
+        }
+
+        // Render bin list
+        function renderBinList() {
+            const binList = document.getElementById('binList');
+            bins.forEach(bin => {
+                const binElement = document.createElement('div');
+                binElement.className = 'border rounded-lg p-4 hover:bg-gray-50 transition-colors duration-200';
+                binElement.innerHTML = `
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <h3 class="font-medium text-gray-900">Bin ${bin.id}</h3>
+                            <p class="text-sm text-gray-500">${bin.location}</p>
+                        </div>
+                        <div class="flex items-center space-x-2">
+                            <span class="px-2 py-1 text-xs rounded-full ${bin.status === 'full' ? 'bg-red-100 text-red-800' : 'bg-swachh-100 text-swachh-800'}">
+                                ${bin.status}
+                            </span>
+                            <button onclick="toggleBinDetails('${bin.id}')" class="text-gray-400 hover:text-gray-600">
+                                <i class="fas fa-chevron-down"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <div id="details-${bin.id}" class="hidden mt-2 pt-2 border-t">
+                        <p class="text-sm text-gray-600">Last cleaned: 2 hours ago</p>
+                        <p class="text-sm text-gray-600">Capacity: 80%</p>
+                    </div>
+                `;
+                binList.appendChild(binElement);
+            });
+        }
+
+        // Toggle bin details
+        function toggleBinDetails(binId) {
+            const details = document.getElementById(`details-${binId}`);
+            const button = details.previousElementSibling.querySelector('button');
+            if (details.classList.contains('hidden')) {
+                details.classList.remove('hidden');
+                button.innerHTML = '<i class="fas fa-chevron-up"></i>';
+            } else {
+                details.classList.add('hidden');
+                button.innerHTML = '<i class="fas fa-chevron-down"></i>';
+            }
+        }
+
+        // Initialize page
+        document.addEventListener('DOMContentLoaded', function() {
+            renderBinList();
+            initMap();
+        });
+
+        // Apply theme on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            const savedTheme = localStorage.getItem('theme');
+            if (savedTheme === 'dark') {
+                document.documentElement.classList.add('dark');
+            }
+        });
+    </script>
+</body>
+
+</html> 
