@@ -1,0 +1,469 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EcoBin - Dashboard</title>
+    <link rel="stylesheet" href="./dist/output.css">
+    <link rel="stylesheet" href="./dist/enhanced-styles.css">
+    <script src="./dist/ui-enhancements.js" defer></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" />
+    <link rel="stylesheet" href="./dist/map-styles.css" />
+    <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
+
+    <style>
+        /* Custom styles for notification */
+        .notification-bar {
+            background-color: #D1F2EB;
+            color: #013220;
+            padding: 10px;
+            margin-bottom: 10px;
+            border-radius: 0.25rem;
+            display: none;
+        }
+
+        /* Dark mode styles */
+        .dark {
+            background-color: #1a1a1a;
+            color: #ffffff;
+        }
+
+        .dark .bg-white {
+            background-color: #2d2d2d;
+            color: #ffffff;
+        }
+
+        .dark .text-gray-900 {
+            color: #ffffff;
+        }
+
+        .dark .text-gray-600 {
+            color: #d1d1d1;
+        }
+
+        .dark .text-gray-500 {
+            color: #a0a0a0;
+        }
+
+        .dark .border-gray-200 {
+            border-color: #404040;
+        }
+
+        .dark .shadow-md {
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.3);
+        }
+
+        .dark .bg-swachh-800 {
+            background-color: #1a1a1a;
+        }
+
+        .dark .hover\:bg-swachh-700:hover {
+            background-color: #2d2d2d;
+        }
+
+        .dark .bg-gray-50 {
+            background-color: #1a1a1a;
+        }
+
+        .dark .bg-gray-100 {
+            background-color: #2d2d2d;
+        }
+
+        .dark .text-gray-800 {
+            color: #ffffff;
+        }
+
+        /* Light mode styles */
+        .bg-swachh-800 {
+            background-color: #013220;
+        }
+
+        .hover\:bg-swachh-700:hover {
+            background-color: #0B6E4F;
+        }
+
+        .bg-swachh-700 {
+            background-color: #0B6E4F;
+        }
+
+        .bg-swachh-600 {
+            background-color: #50C878;
+        }
+
+        .text-swachh-600 {
+            color: #50C878;
+        }
+
+        .bg-swachh-100 {
+            background-color: #D1F2EB;
+        }
+
+        .text-swachh-800 {
+            color: #013220;
+        }
+
+        .border-swachh-600 {
+            border-color: #50C878;
+        }
+    </style>
+</head>
+
+<body class="bg-gray-50">
+    <div class="min-h-screen flex">
+        <div
+            class="bg-swachh-800 text-white w-64 space-y-6 py-7 px-2 absolute inset-y-0 left-0 transform -translate-x-full md:relative md:translate-x-0 transition duration-200 ease-in-out">
+            <div class="flex items-center space-x-2 px-4">
+                <i class="fas fa-trash-alt text-2xl"></i>
+                <span class="text-2xl font-extrabold">EcoBin</span>
+            </div>
+            <nav class="space-y-2">
+                <a href="dashboard.html" class="block py-2.5 px-4 rounded transition duration-200 bg-swachh-700">
+                    <i class="fas fa-home mr-2"></i>Dashboard
+                </a>
+                <a href="bin-locations.html"
+                    class="block py-2.5 px-4 rounded transition duration-200 hover:bg-swachh-700 hover:text-white">
+                    <i class="fas fa-map-marker-alt mr-2"></i>Bin Locations
+                </a>
+                <a href="workers.html"
+                    class="block py-2.5 px-4 rounded transition duration-200 hover:bg-swachh-700 hover:text-white">
+                    <i class="fas fa-users mr-2"></i>Workers
+                </a>
+                <a href="analytics.html"
+                    class="block py-2.5 px-4 rounded transition duration-200 hover:bg-swachh-700 hover:text-white">
+                    <i class="fas fa-chart-bar mr-2"></i>Analytics
+                </a>
+                <a href="settings.html"
+                    class="block py-2.5 px-4 rounded transition duration-200 hover:bg-swachh-700 hover:text-white">
+                    <i class="fas fa-cog mr-2"></i>Settings
+                </a>
+            </nav>
+        </div>
+
+        <div class="flex-1">
+            <div class="bg-white shadow-lg">
+                <div class="flex items-center justify-between p-4">
+                    <div class="flex items-center space-x-4">
+                        <button class="md:hidden text-gray-500 hover:text-gray-600">
+                            <i class="fas fa-bars text-xl"></i>
+                        </button>
+                        <a href="settings.html"
+                            class="flex items-center space-x-2 hover:text-swachh-600 transition-colors duration-200">
+                            <span class="text-gray-800">Admin User</span>
+                            <img class="h-8 w-8 rounded-full"
+                                src="https://ui-avatars.com/api/?name=Admin+User&background=22c55e&color=fff"
+                                alt="Admin">
+                        </a>
+                        <button id="logoutBtn" class="text-gray-600 hover:text-red-500 transition-colors duration-200">
+                            <i class="fas fa-sign-out-alt text-xl"></i>
+                        </button>
+                    </div>
+                    <div>
+                        <button id="themeToggle"
+                            class="text-gray-600 hover:text-swachh-600 transition-colors duration-200">
+                            <i class="fas fa-moon text-xl"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="p-6">
+                <h1 class="text-2xl font-semibold text-gray-900">Dashboard Overview</h1>
+
+                <div id="bin-attention-notification" class="notification-bar" style="display: none;">
+                    Bin 1 needs attention! Please dispatch a cleaning team.
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mt-6">
+                    <div class="bg-white rounded-lg shadow-md p-6">
+                        <div class="flex items-center">
+                            <div class="p-3 rounded-full bg-red-100 text-red-500">
+                                <i class="fas fa-exclamation-triangle text-2xl"></i>
+                            </div>
+                            <div class="ml-4">
+                                <h2 class="text-gray-600 text-sm">Bins Needing Attention</h2>
+                                <p class="text-2xl font-semibold text-gray-800" id="bins-needing-attention">0</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="bg-white rounded-lg shadow-md p-6">
+                        <div class="flex items-center">
+                            <div class="p-3 rounded-full bg-green-100 text-green-500">
+                                <i class="fas fa-check-circle text-2xl"></i>
+                            </div>
+                            <div class="ml-4">
+                                <h2 class="text-gray-600 text-sm">Active Workers</h2>
+                                <p class="text-2xl font-semibold text-gray-800">0</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="bg-white rounded-lg shadow-md p-6">
+                        <div class="flex items-center">
+                            <div class="p-3 rounded-full bg-blue-100 text-blue-500">
+                                <i class="fas fa-trash text-2xl"></i>
+                            </div>
+                            <div class="ml-4">
+                                <h2 class="text-gray-600 text-sm">Total Bins</h2>
+                                <p class="text-2xl font-semibold text-gray-800">0</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="bg-white rounded-lg shadow-md p-6">
+                        <div class="flex items-center">
+                            <div class="p-3 rounded-full bg-yellow-100 text-yellow-500">
+                                <i class="fas fa-clock text-2xl"></i>
+                            </div>
+                            <div class="ml-4">
+                                <h2 class="text-gray-600 text-sm">Pending Tasks</h2>
+                                <p class="text-2xl font-semibold text-gray-800">0</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mt-6">
+                    <div class="bg-white rounded-lg shadow-md p-6">
+                        <h2 class="text-lg font-semibold text-gray-900 mb-4">Recent Activity</h2>
+                        <div class="space-y-4">
+                            <div class="text-center text-gray-500 py-4">
+                                <p>No recent activities</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="bg-white rounded-lg shadow-md p-6">
+                        <h2 class="text-lg font-semibold text-gray-900 mb-4">Bin Locations</h2>
+                        <div id="map" class="h-[400px] rounded-lg overflow-hidden"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Add this before your Firebase script initialization -->
+    <script src="./config.js"></script>
+    
+    <script>
+        // Firebase configuration
+        const firebaseConfig = firebaseConfigs.dashboard;
+    
+        // Initialize Firebase
+        firebase.initializeApp(firebaseConfig);
+        const database = firebase.database();
+    
+        // Global variables
+        let map;
+        const bins = [];
+        const markers = {};
+        const notificationDiv = document.getElementById('bin-attention-notification');
+        const binsNeedingAttentionElement = document.getElementById('bins-needing-attention');
+        const themeToggle = document.getElementById('themeToggle');
+        const themeIcon = themeToggle.querySelector('i');
+
+        // Create direct map instance
+        function createDirectMap() {
+            try {
+                const directMap = L.map('map').setView([25.4358, 81.8463], 13);
+                
+                L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                    attribution: '© OpenStreetMap contributors'
+                }).addTo(directMap);
+
+                // Force map refresh
+                setTimeout(() => directMap.invalidateSize(true), 500);
+
+                return directMap;
+            } catch (error) {
+                console.error("Error creating direct map:", error);
+                return null;
+            }
+        }
+
+        // Initialize map with bin data
+        function initMap(binData) {
+            map = createDirectMap();
+
+            if (map && binData && binData.length > 0) {
+                binData.forEach(bin => {
+                    addBinToMap(bin);
+                });
+            }
+        }
+
+        // Add a bin to the map
+        function addBinToMap(bin) {
+            const color = bin.status === 'full' ? 'red' : 'green';
+
+            // Create marker
+            const marker = L.circleMarker([bin.lat, bin.lng], {
+                radius: 8,
+                fillColor: color,
+                color: '#fff',
+                weight: 1,
+                opacity: 1,
+                fillOpacity: 0.8
+            }).addTo(map);
+
+            // Add popup
+            marker.bindPopup(`
+                <div style="padding: 5px; max-width: 200px;">
+                    <h3 style="font-weight: bold; margin-bottom: 5px;">Bin ${bin.id}</h3>
+                    <p style="margin: 5px 0;">Status: <span style="color: ${color};">${bin.status}</span></p>
+                    <p style="margin: 5px 0;">Fill Level: ${bin.fillLevel || 0}%</p>
+                    <p style="margin: 5px 0;">Coordinates: ${bin.lat}, ${bin.lng}</p>
+                </div>
+            `);
+
+            // Store marker reference
+            markers[bin.id] = marker;
+        }
+
+        // Fetch bins data from API
+        async function fetchBins() {
+            try {
+                const response = await fetch('/api/bins');
+                const data = await response.json();
+                return data;
+            } catch (error) {
+                console.error('Error fetching bins:', error);
+                return [];
+            }
+        }
+
+        // Initialize page
+        async function initPage() {
+            // Fetch bins from API
+            let binsData = [];
+            try {
+                binsData = await fetchBins();
+            } catch (error) {
+                console.error("Error fetching bins:", error);
+            }
+
+            // If API fails, use sample data
+            if (!binsData || binsData.length === 0) {
+                bins.push(
+                    { id: 'BIN001', status: 'full', lat: 25.4358, lng: 81.8463, fillLevel: 95 },
+                    { id: 'BIN002', status: 'empty', lat: 25.4589, lng: 81.8523, fillLevel: 10 },
+                    { id: 'BIN003', status: 'full', lat: 25.4422, lng: 81.8339, fillLevel: 90 },
+                    { id: 'BIN004', status: 'empty', lat: 25.4497, lng: 81.8347, fillLevel: 5 },
+                    { id: 'BIN005', status: 'full', lat: 25.4389, lng: 81.8456, fillLevel: 85 }
+                );
+            } else {
+                // Map API data to our format
+                binsData.forEach(bin => {
+                    bins.push({
+                        id: bin.id,
+                        status: bin.fillLevel > 80 ? 'full' : 'empty',
+                        lat: bin.lat,
+                        lng: bin.lng,
+                        fillLevel: bin.fillLevel
+                    });
+                });
+            }
+
+            // Initialize map after a short delay to ensure DOM is ready
+            setTimeout(() => {
+                initMap(bins);
+            }, 500);
+        }
+
+        // Firebase bin attention monitoring
+        function monitorBinAttention() {
+            const attentionRef = database.ref('/Bin1/attentionNeeded');
+            let totalBinsNeedingAttention = 0;
+
+            // Set default value to 0
+            binsNeedingAttentionElement.textContent = "0";
+            notificationDiv.style.display = 'none';
+
+            // Listen for changes to the attentionNeeded value
+            attentionRef.on('value', (snapshot) => {
+                const attentionValue = snapshot.val();
+
+                if (attentionValue === 1) {
+                    notificationDiv.style.display = 'block';
+                    notificationDiv.textContent = "Bin 1 needs attention! Please dispatch a cleaning team.";
+                    totalBinsNeedingAttention = 1;
+                } else {
+                    notificationDiv.style.display = 'none';
+                    totalBinsNeedingAttention = 0;
+                }
+
+                binsNeedingAttentionElement.textContent = totalBinsNeedingAttention.toString();
+            }, (error) => {
+                console.error("Error listening to Firebase:", error);
+            });
+        }
+
+        // Theme management
+        function setupTheme() {
+            // Check for saved theme preference
+            const savedTheme = localStorage.getItem('theme');
+            if (savedTheme === 'dark') {
+                document.documentElement.classList.add('dark');
+                document.body.classList.add('dark'); // For compatibility
+                themeIcon.classList.remove('fa-moon');
+                themeIcon.classList.add('fa-sun');
+            }
+
+            // Theme toggle functionality
+            themeToggle.addEventListener('click', () => {
+                document.documentElement.classList.toggle('dark');
+                document.body.classList.toggle('dark'); // For compatibility
+                const isDark = document.documentElement.classList.contains('dark');
+
+                // Update icon
+                if (isDark) {
+                    themeIcon.classList.remove('fa-moon');
+                    themeIcon.classList.add('fa-sun');
+                    localStorage.setItem('theme', 'dark');
+                } else {
+                    themeIcon.classList.remove('fa-sun');
+                    themeIcon.classList.add('fa-moon');
+                    localStorage.setItem('theme', 'light');
+                }
+            });
+        }
+
+        // Initialize UI components
+        function setupUI() {
+            // Toggle sidebar on mobile
+            document.querySelector('.md\\:hidden').addEventListener('click', function () {
+                document.querySelector('.bg-swachh-800').classList.toggle('-translate-x-full');
+            });
+
+            // Logout functionality
+            document.getElementById('logoutBtn').addEventListener('click', function () {
+                if (confirm('Are you sure you want to logout?')) {
+                    window.location.href = 'index.html';
+                }
+            });
+        }
+
+        // Single DOMContentLoaded event handler
+        document.addEventListener('DOMContentLoaded', function () {
+            // Initialize sidebar
+            const sidebar = document.querySelector('.bg-swachh-800');
+            if (window.innerWidth >= 768) { // md breakpoint
+                sidebar.classList.remove('-translate-x-full');
+            }
+
+            // Setup components
+            setupTheme();
+            setupUI();
+            monitorBinAttention();
+            initPage();
+            
+            // Apply sidebar enhancements
+            if (typeof enhanceSidebar === 'function') {
+                enhanceSidebar();
+            }
+        });
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,1016 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EcoBin - Workers</title>
+    <link rel="stylesheet" href="./dist/output.css">
+    <link rel="stylesheet" href="./dist/enhanced-styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        /* Custom styles for notification */
+        .notification-bar {
+            background-color: #D1F2EB;
+            color: #013220;
+            padding: 10px;
+            margin-bottom: 10px;
+            border-radius: 0.25rem;
+            display: none;
+        }
+
+        /* Dark mode styles */
+        .dark {
+            background-color: #1a1a1a;
+            color: #ffffff;
+        }
+        .dark .bg-white {
+            background-color: #2d2d2d;
+            color: #ffffff;
+        }
+        .dark .text-gray-900 {
+            color: #ffffff;
+        }
+        .dark .text-gray-600 {
+            color: #d1d1d1;
+        }
+        .dark .text-gray-500 {
+            color: #a0a0a0;
+        }
+        .dark .border-gray-200 {
+            border-color: #404040;
+        }
+        .dark .shadow-md {
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.3);
+        }
+        .dark .bg-swachh-800 {
+            background-color: #1a1a1a;
+        }
+        .dark .hover\:bg-swachh-700:hover {
+            background-color: #2d2d2d;
+        }
+        .dark .bg-gray-50 {
+            background-color: #1a1a1a;
+        }
+        .dark .bg-gray-100 {
+            background-color: #2d2d2d;
+        }
+        .dark .text-gray-800 {
+            color: #ffffff;
+        }
+
+        /* Light mode styles */
+        .bg-swachh-800 {
+            background-color: #013220;
+        }
+        .hover\:bg-swachh-700:hover {
+            background-color: #0B6E4F;
+        }
+        .bg-swachh-700 {
+            background-color: #0B6E4F;
+        }
+        .bg-swachh-600 {
+            background-color: #50C878;
+        }
+        .text-swachh-600 {
+            color: #50C878;
+        }
+        .bg-swachh-100 {
+            background-color: #D1F2EB;
+        }
+        .text-swachh-800 {
+            color: #013220;
+        }
+        .border-swachh-600 {
+            border-color: #50C878;
+        }
+    </style>
+</head>
+
+<body class="bg-gray-50">
+    <div class="min-h-screen flex">
+        <div class="bg-swachh-800 text-white w-64 space-y-6 py-7 px-2 absolute inset-y-0 left-0 transform -translate-x-full md:relative md:translate-x-0 transition duration-200 ease-in-out">
+            <div class="flex items-center space-x-2 px-4">
+                <i class="fas fa-trash-alt text-2xl"></i>
+                <span class="text-2xl font-extrabold">EcoBin</span>
+            </div>
+            <nav class="space-y-2">
+                <a href="dashboard.html" class="block py-2.5 px-4 rounded transition duration-200 hover:bg-swachh-700 hover:text-white">
+                    <i class="fas fa-home mr-2"></i>Dashboard
+                </a>
+                <a href="bin-locations.html" class="block py-2.5 px-4 rounded transition duration-200 hover:bg-swachh-700 hover:text-white">
+                    <i class="fas fa-map-marker-alt mr-2"></i>Bin Locations
+                </a>
+                <a href="workers.html" class="block py-2.5 px-4 rounded transition duration-200 bg-swachh-700 relative overflow-hidden">
+                    <i class="fas fa-users mr-2"></i>Workers
+                </a>
+                <a href="analytics.html" class="block py-2.5 px-4 rounded transition duration-200 hover:bg-swachh-700 hover:text-white">
+                    <i class="fas fa-chart-bar mr-2"></i>Analytics
+                </a>
+                <a href="settings.html" class="block py-2.5 px-4 rounded transition duration-200 hover:bg-swachh-700 hover:text-white">
+                    <i class="fas fa-cog mr-2"></i>Settings
+                </a>
+            </nav>
+        </div>
+
+        <div class="flex-1">
+            <div class="bg-white shadow-lg">
+                <div class="flex items-center justify-between p-4">
+                    <button class="md:hidden text-gray-500 hover:text-gray-600">
+                        <i class="fas fa-bars text-xl"></i>
+                    </button>
+                    <div class="flex items-center space-x-4">
+                        <a href="settings.html" class="flex items-center space-x-2 hover:text-swachh-600 transition-colors duration-200">
+                            <span class="text-gray-800">Admin User</span>
+                            <img class="h-8 w-8 rounded-full" src="https://ui-avatars.com/api/?name=Admin+User&background=22c55e&color=fff" alt="Admin">
+                        </a>
+                        <button id="logoutBtn" class="text-gray-600 hover:text-red-500 transition-colors duration-200">
+                            <i class="fas fa-sign-out-alt text-xl"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="p-6">
+                <div class="flex justify-between items-center mb-6">
+                    <h1 class="text-2xl font-semibold text-gray-900">Workers Management</h1>
+                    <button id="manageZonesBtn" class="px-4 py-2 bg-swachh-600 text-white rounded-md hover:bg-swachh-700 transition-colors">
+                        <i class="fas fa-map-marked-alt mr-2"></i>Manage Zones
+                    </button>
+                </div>
+                
+                <!-- Workers Grid -->
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6" id="workersGrid">
+                    <!-- Worker cards will be populated here -->
+                    <div class="text-center text-gray-500 py-8 col-span-full">
+                        <p>Loading workers data...</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Zone Assignment Modal -->
+    <div id="zoneAssignmentModal" class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center z-50">
+        <div class="bg-white rounded-lg p-6 max-w-lg w-full mx-4">
+            <div class="flex justify-between items-center mb-4">
+                <h3 class="text-lg font-semibold text-gray-900">Assign Zone</h3>
+                <button onclick="closeZoneAssignmentModal()" class="text-gray-500 hover:text-gray-700">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="mb-4">
+                <label for="zoneSelect" class="block text-sm font-medium text-gray-700 mb-1">Select Zone</label>
+                <select id="zoneSelect" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-swachh-500">
+                    <option value="">Select a zone</option>
+                    <!-- Zones will be populated here -->
+                </select>
+            </div>
+            <div class="mt-6 flex justify-end">
+                <button onclick="closeZoneAssignmentModal()" class="px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-100 rounded-md mr-2">
+                    Cancel
+                </button>
+                <button onclick="confirmZoneAssignment()" class="px-4 py-2 text-sm font-medium text-white bg-swachh-600 hover:bg-swachh-700 rounded-md">
+                    Assign Zone
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bin Assignment Modal -->
+    <div id="binAssignmentModal" class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center z-50">
+        <div class="bg-white rounded-lg p-6 max-w-lg w-full mx-4">
+            <div class="flex justify-between items-center mb-4">
+                <h3 class="text-lg font-semibold text-gray-900">Assign Bins</h3>
+                <button onclick="closeBinAssignmentModal()" class="text-gray-500 hover:text-gray-700">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="mb-4">
+                <label class="block text-sm font-medium text-gray-700 mb-1">Zone: <span id="selectedZoneName" class="font-semibold"></span></label>
+                <div class="flex items-center justify-between mt-2">
+                    <span class="text-sm text-gray-600">Number of bins to assign:</span>
+                    <div class="flex items-center">
+                        <button id="decreaseBinCount" class="w-8 h-8 flex items-center justify-center bg-gray-200 rounded-l-md hover:bg-gray-300">
+                            <i class="fas fa-minus"></i>
+                        </button>
+                        <input type="number" id="binCount" min="0" value="0" class="w-16 h-8 text-center border-t border-b border-gray-300">
+                        <button id="increaseBinCount" class="w-8 h-8 flex items-center justify-center bg-gray-200 rounded-r-md hover:bg-gray-300">
+                            <i class="fas fa-plus"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+            <div class="mt-4">
+                <button id="addNewBinBtn" class="w-full px-4 py-2 text-sm font-medium text-white bg-swachh-600 hover:bg-swachh-700 rounded-md mb-4">
+                    <i class="fas fa-plus mr-2"></i>Add New Bin to Zone
+                </button>
+            </div>
+            <div class="mt-6 flex justify-end">
+                <button onclick="closeBinAssignmentModal()" class="px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-100 rounded-md mr-2">
+                    Cancel
+                </button>
+                <button onclick="confirmBinAssignment()" class="px-4 py-2 text-sm font-medium text-white bg-black hover:bg-gray-900 rounded-md">
+                    Assign Bins
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Add New Bin Modal -->
+    <div id="addBinModal" class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center z-50">
+        <div class="bg-white rounded-lg p-6 max-w-lg w-full mx-4">
+            <div class="flex justify-between items-center mb-4">
+                <h3 class="text-lg font-semibold text-gray-900">Add New Bin</h3>
+                <button onclick="closeAddBinModal()" class="text-gray-500 hover:text-gray-700">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="space-y-4">
+                <div>
+                    <label for="binLocation" class="block text-sm font-medium text-gray-700 mb-1">Location</label>
+                    <input type="text" id="binLocation" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-swachh-500" placeholder="Enter bin location">
+                </div>
+                <div>
+                    <label for="binLatitude" class="block text-sm font-medium text-gray-700 mb-1">Latitude</label>
+                    <input type="number" id="binLatitude" step="0.000001" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-swachh-500" placeholder="Enter latitude">
+                </div>
+                <div>
+                    <label for="binLongitude" class="block text-sm font-medium text-gray-700 mb-1">Longitude</label>
+                    <input type="number" id="binLongitude" step="0.000001" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-swachh-500" placeholder="Enter longitude">
+                </div>
+            </div>
+            <div class="mt-6 flex justify-end">
+                <button onclick="closeAddBinModal()" class="px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-100 rounded-md mr-2">
+                    Cancel
+                </button>
+                <button onclick="confirmAddBin()" class="px-4 py-2 text-sm font-medium text-white bg-swachh-600 hover:bg-swachh-700 rounded-md">
+                    Add Bin
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Zone Management Modal -->
+    <div id="zoneManagementModal" class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center z-50">
+        <div class="bg-white rounded-lg p-6 max-w-lg w-full mx-4">
+            <div class="flex justify-between items-center mb-4">
+                <h3 class="text-lg font-semibold text-gray-900">Manage Zones</h3>
+                <button onclick="closeZoneManagementModal()" class="text-gray-500 hover:text-gray-700">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            
+            <!-- Add New Zone Form -->
+            <div class="mb-6 p-4 border border-gray-200 rounded-lg">
+                <h4 class="text-md font-medium text-gray-900 mb-3">Add New Zone</h4>
+                <div class="space-y-3">
+                    <div>
+                        <label for="zoneName" class="block text-sm font-medium text-gray-700 mb-1">Zone Name</label>
+                        <input type="text" id="zoneName" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-swachh-500" placeholder="Enter zone name">
+                    </div>
+                    <div>
+                        <label for="zoneDescription" class="block text-sm font-medium text-gray-700 mb-1">Description</label>
+                        <textarea id="zoneDescription" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-swachh-500" placeholder="Enter zone description" rows="2"></textarea>
+                    </div>
+                    <button onclick="addNewZone()" class="w-full px-4 py-2 bg-swachh-600 text-white rounded-md hover:bg-swachh-700 transition-colors">
+                        Add Zone
+                    </button>
+                </div>
+            </div>
+            
+            <!-- Existing Zones List -->
+            <div>
+                <h4 class="text-md font-medium text-gray-900 mb-3">Existing Zones</h4>
+                <div id="zonesList" class="space-y-2 max-h-60 overflow-y-auto">
+                    <!-- Zones will be listed here -->
+                </div>
+            </div>
+            
+            <div class="mt-6 flex justify-end">
+                <button onclick="closeZoneManagementModal()" class="px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-100 rounded-md">
+                    Close
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-auth.js"></script>
+    <script src="./config.js"></script>
+
+    <script>
+        // Firebase configuration
+        const firebaseConfig = firebaseConfigs.workers;
+
+        // Initialize Firebase
+        firebase.initializeApp(firebaseConfig);
+        const database = firebase.database();
+
+        // Global variables
+        let workers = [];
+        let zones = [];
+        let selectedWorkerId = null;
+        let selectedZoneId = null;
+
+        // Initialize sidebar state and theme
+        document.addEventListener('DOMContentLoaded', function() {
+            const sidebar = document.querySelector('.bg-swachh-800');
+            if (window.innerWidth >= 768) { // md breakpoint
+                sidebar.classList.remove('-translate-x-full');
+            }
+
+            // Initialize theme
+            const currentTheme = localStorage.getItem('theme') || 'light';
+            document.documentElement.classList.toggle('dark', currentTheme === 'dark');
+            updateThemeColors(currentTheme);
+
+            // Load workers data
+            loadWorkers();
+            
+            // Load zones data
+            loadZones();
+            
+            // Setup event listeners
+            setupEventListeners();
+            
+            // Add event listener for Manage Zones button
+            document.getElementById('manageZonesBtn').addEventListener('click', function() {
+                openZoneManagementModal();
+            });
+        });
+
+        // Theme management functions
+        function updateThemeColors(theme) {
+            const isDark = theme === 'dark';
+            document.documentElement.classList.toggle('dark', isDark);
+            document.body.classList.toggle('dark', isDark);
+            
+            // Update all modals with dark theme
+            const modals = document.querySelectorAll('#zoneAssignmentModal, #binAssignmentModal, #addBinModal, #zoneManagementModal');
+            modals.forEach(modal => {
+                // Fix modal background opacity in dark mode
+                if (isDark) {
+                    modal.classList.add('dark-modal-bg');
+                } else {
+                    modal.classList.remove('dark-modal-bg');
+                }
+                
+                // Apply dark theme to modal backgrounds
+                const modalContent = modal.querySelector('div > div');
+                if (modalContent) {
+                    if (isDark) {
+                        modalContent.classList.remove('bg-white');
+                        modalContent.classList.add('bg-gray-800', 'dark-modal-content');
+                    } else {
+                        modalContent.classList.remove('bg-gray-800', 'dark-modal-content');
+                        modalContent.classList.add('bg-white');
+                    }
+                }
+                
+                // Apply dark theme to text elements in modals
+                const textElements = modal.querySelectorAll('.text-gray-900, .text-gray-800, .text-gray-700, .text-gray-600, .text-gray-500');
+                textElements.forEach(el => {
+                    if (isDark) {
+                        el.classList.remove('text-gray-900', 'text-gray-800', 'text-gray-700', 'text-gray-600', 'text-gray-500');
+                        el.classList.add('text-white', 'text-gray-100', 'text-gray-200', 'text-gray-300', 'text-gray-400');
+                    } else {
+                        el.classList.remove('text-white', 'text-gray-100', 'text-gray-200', 'text-gray-300', 'text-gray-400');
+                        el.classList.add('text-gray-900', 'text-gray-800', 'text-gray-700', 'text-gray-600', 'text-gray-500');
+                    }
+                });
+                
+                // Update input fields and selects in modals
+                const formElements = modal.querySelectorAll('input, select, textarea');
+                formElements.forEach(el => {
+                    if (isDark) {
+                        el.classList.remove('border-gray-300');
+                        el.classList.add('border-gray-600', 'bg-gray-700', 'text-white');
+                    } else {
+                        el.classList.remove('border-gray-600', 'bg-gray-700', 'text-white');
+                        el.classList.add('border-gray-300');
+                    }
+                });
+                
+                // Style buttons in dark mode
+                const buttons = modal.querySelectorAll('button');
+                buttons.forEach(btn => {
+                    // Skip buttons that already have specific background colors
+                    if (btn.classList.contains('bg-swachh-600') || btn.classList.contains('bg-black')) {
+                        return;
+                    }
+                    
+                    if (isDark) {
+                        if (btn.classList.contains('hover:bg-gray-100')) {
+                            btn.classList.remove('hover:bg-gray-100');
+                            btn.classList.add('hover:bg-gray-600');
+                        }
+                        
+                        if (btn.classList.contains('bg-gray-200')) {
+                            btn.classList.remove('bg-gray-200');
+                            btn.classList.add('bg-gray-600');
+                        }
+                    } else {
+                        if (btn.classList.contains('hover:bg-gray-600')) {
+                            btn.classList.remove('hover:bg-gray-600');
+                            btn.classList.add('hover:bg-gray-100');
+                        }
+                        
+                        if (btn.classList.contains('bg-gray-600')) {
+                            btn.classList.remove('bg-gray-600');
+                            btn.classList.add('bg-gray-200');
+                        }
+                    }
+                });
+            });
+            
+            // Add custom CSS for dark mode modals
+            let darkModeStyle = document.getElementById('dark-mode-style');
+            if (!darkModeStyle) {
+                darkModeStyle = document.createElement('style');
+                darkModeStyle.id = 'dark-mode-style';
+                document.head.appendChild(darkModeStyle);
+            }
+            
+            if (isDark) {
+                darkModeStyle.textContent = `
+                    .dark-modal-bg {
+                        background-color: rgba(0, 0, 0, 0.75) !important;
+                    }
+                    .dark-modal-content {
+                        background-color: #2d2d2d !important;
+                        color: white !important;
+                        border: 1px solid #374151 !important;
+                    }
+                    select.bg-gray-700 option {
+                        background-color: #2d2d2d !important;
+                        color: white !important;
+                    }
+                    input[type="text"], input[type="number"], textarea, select {
+                        background-color: #4b5563 !important;
+                        color: white !important;
+                        border-color: #6b7280 !important;
+                    }
+                `;
+            } else {
+                darkModeStyle.textContent = '';
+            }
+            
+            // Continue with your existing code for other elements
+            // Update text colors
+            const textElements = document.querySelectorAll('.text-gray-900, .text-gray-800, .text-gray-700, .text-gray-600, .text-gray-500');
+            textElements.forEach(el => {
+                if (isDark) {
+                    el.classList.remove('text-gray-900', 'text-gray-800', 'text-gray-700', 'text-gray-600', 'text-gray-500');
+                    el.classList.add('text-white', 'text-gray-100', 'text-gray-200', 'text-gray-300', 'text-gray-400');
+                } else {
+                    el.classList.remove('text-white', 'text-gray-100', 'text-gray-200', 'text-gray-300', 'text-gray-400');
+                    el.classList.add('text-gray-900', 'text-gray-800', 'text-gray-700', 'text-gray-600', 'text-gray-500');
+                }
+            });
+
+            // Update background colors
+            const bgElements = document.querySelectorAll('.bg-white, .bg-gray-50, .bg-gray-100');
+            bgElements.forEach(el => {
+                if (isDark) {
+                    el.classList.remove('bg-white', 'bg-gray-50', 'bg-gray-100');
+                    el.classList.add('bg-gray-800', 'bg-gray-900', 'bg-gray-700');
+                } else {
+                    el.classList.remove('bg-gray-800', 'bg-gray-900', 'bg-gray-700');
+                    el.classList.add('bg-white', 'bg-gray-50', 'bg-gray-100');
+                }
+            });
+
+            // Update border colors
+            const borderElements = document.querySelectorAll('.border-gray-200, .border-gray-300');
+            borderElements.forEach(el => {
+                if (isDark) {
+                    el.classList.remove('border-gray-200', 'border-gray-300');
+                    el.classList.add('border-gray-700', 'border-gray-600');
+                } else {
+                    el.classList.remove('border-gray-700', 'border-gray-600');
+                    el.classList.add('border-gray-200', 'border-gray-300');
+                }
+            });
+        }
+
+        // Listen for theme changes from other pages
+        window.addEventListener('storage', function(e) {
+            if (e.key === 'theme') {
+                updateThemeColors(e.newValue);
+            }
+        });
+
+        // Toggle sidebar on mobile
+        document.querySelector('button').addEventListener('click', function () {
+            document.querySelector('.bg-swachh-800').classList.toggle('-translate-x-full');
+        });
+
+        // Logout functionality
+        document.getElementById('logoutBtn').addEventListener('click', function () {
+            if (confirm('Are you sure you want to logout?')) {
+                window.location.href = 'index.html';
+            }
+        });
+
+        // Load workers from Firebase
+        function loadWorkers() {
+            console.log("Loading workers from Firebase...");
+            
+            // Set up real-time listener for workers
+            const workersRef = database.ref('workers');
+            workersRef.on('value', (snapshot) => {
+                console.log("Workers data updated");
+                workers = [];
+                
+                if (snapshot.exists()) {
+                    snapshot.forEach((childSnapshot) => {
+                        const worker = childSnapshot.val();
+                        worker.id = childSnapshot.key;
+                        workers.push(worker);
+                        console.log("Worker loaded:", worker.name, worker.workerId);
+                    });
+                } else {
+                    console.log("No workers found in database");
+                }
+                
+                renderWorkers();
+            }, (error) => {
+                console.error("Error loading workers:", error);
+                const workersContainer = document.getElementById('workersGrid');
+                if (workersContainer) {
+                    workersContainer.innerHTML = `
+                        <div class="text-center text-red-500 py-8 col-span-full">
+                            <p>Error loading workers data. Please check console for details.</p>
+                        </div>
+                    `;
+                }
+            });
+        }
+
+        // Load zones from Firebase
+        function loadZones() {
+            console.log("Loading zones from Firebase...");
+            
+            // Set up real-time listener for zones
+            const zonesRef = database.ref('zones');
+            zonesRef.on('value', (snapshot) => {
+                console.log("Zones data updated");
+                zones = [];
+                
+                if (snapshot.exists()) {
+                    snapshot.forEach((childSnapshot) => {
+                        const zone = childSnapshot.val();
+                        zone.id = childSnapshot.key;
+                        zones.push(zone);
+                        console.log("Zone loaded:", zone.name);
+                    });
+                } else {
+                    console.log("No zones found in database");
+                }
+                
+                populateZoneSelect();
+            }, (error) => {
+                console.error("Error loading zones:", error);
+            });
+        }
+
+        // Render workers in the grid
+        function renderWorkers() {
+            const workersContainer = document.getElementById('workersGrid');
+            if (!workersContainer) return;
+
+            if (workers.length === 0) {
+                workersContainer.innerHTML = `
+                    <div class="text-center text-gray-500 py-8 col-span-full">
+                        <p>No workers found. Workers will appear here when they register through the app.</p>
+                    </div>
+                `;
+                return;
+            }
+
+            workersContainer.innerHTML = workers.map(worker => `
+                <div class="bg-white rounded-lg shadow-md overflow-hidden">
+                    <div class="p-6">
+                        <div class="flex items-center justify-between mb-4">
+                            <div class="flex items-center space-x-4">
+                                <img src="https://ui-avatars.com/api/?name=${encodeURIComponent(worker.name)}&background=22c55e&color=fff" alt="${worker.name}" class="w-16 h-16 rounded-full object-cover">
+                                <div>
+                                    <h3 class="text-lg font-semibold text-gray-900">${worker.name}</h3>
+                                    <p class="text-sm text-gray-500">ID: ${worker.workerId || 'N/A'}</p>
+                                </div>
+                            </div>
+                            <span class="px-3 py-1 rounded-full text-sm font-medium ${
+                                worker.status === 'fired' ? 'bg-red-100 text-red-800' :
+                                worker.zone ? 'bg-green-100 text-green-800' :
+                                'bg-yellow-100 text-yellow-800'
+                            }">${
+                                worker.status === 'fired' ? 'Fired' :
+                                worker.zone ? 'Active' :
+                                'Pending'
+                            }</span>
+                        </div>
+                        
+                        <!-- Zone Assignment Section -->
+                        <div class="mb-4 p-3 bg-gray-50 rounded-md">
+                            <div class="flex items-center justify-between">
+                                <div>
+                                    <p class="text-sm text-gray-500">Assigned Zone</p>
+                                    <p class="text-gray-900 font-medium">${worker.zone || 'Not assigned'}</p>
+                                </div>
+                                <button onclick="openZoneAssignmentModal('${worker.id}')" class="px-3 py-1 bg-blue-600 text-black text-sm rounded-md hover:bg-blue-700 transition-colors">
+                                    <i class="fas fa-map-marker-alt mr-1"></i> Assign Zone
+                                </button>
+                            </div>
+                        </div>
+                        
+                        <div class="flex justify-between items-center">
+                            <button type="button" class="text-gray-400 hover:text-gray-600 toggle-details" data-worker-id="${worker.id}">
+                                <i class="fas fa-chevron-down toggle-icon"></i>
+                            </button>
+                            <div class="flex space-x-2">
+                                <button onclick="openBinAssignmentModal('${worker.id}')" class="px-3 py-1 bg-black text-white text-sm rounded-md hover:bg-gray-900 transition-colors">
+                                    <i class="fas fa-trash mr-1"></i> Assign Bins
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="worker-details hidden border-t border-gray-200" data-worker-id="${worker.id}">
+                        <div class="p-6 space-y-4">
+                            <div>
+                                <p class="text-sm text-gray-500">Email</p>
+                                <p class="text-gray-900">${worker.email || 'N/A'}</p>
+                            </div>
+                            <div>
+                                <p class="text-sm text-gray-500">Phone Number</p>
+                                <p class="text-gray-900">${worker.phone || 'N/A'}</p>
+                            </div>
+                            <div>
+                                <p class="text-sm text-gray-500">Address</p>
+                                <p class="text-gray-900">${worker.address || 'N/A'}</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+
+            // Add click event listeners to all toggle buttons
+            document.querySelectorAll('.toggle-details').forEach(button => {
+                button.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    
+                    const workerId = this.getAttribute('data-worker-id');
+                    const card = this.closest('.bg-white');
+                    const details = card.querySelector(`.worker-details[data-worker-id="${workerId}"]`);
+                    const icon = this.querySelector('.toggle-icon');
+                    
+                    // Toggle details
+                    if (details.classList.contains('hidden')) {
+                        details.classList.remove('hidden');
+                        icon.classList.remove('fa-chevron-down');
+                        icon.classList.add('fa-chevron-up');
+                    } else {
+                        details.classList.add('hidden');
+                        icon.classList.remove('fa-chevron-up');
+                        icon.classList.add('fa-chevron-down');
+                    }
+                });
+            });
+        }
+
+        // Populate zone select dropdown
+        function populateZoneSelect() {
+            const zoneSelect = document.getElementById('zoneSelect');
+            if (!zoneSelect) return;
+
+            // Clear existing options except the first one
+            while (zoneSelect.options.length > 1) {
+                zoneSelect.remove(1);
+            }
+
+            // Add zones
+            zones.forEach(zone => {
+                const option = document.createElement('option');
+                option.value = zone.id;
+                option.textContent = zone.name;
+                zoneSelect.appendChild(option);
+            });
+        }
+
+        // Setup event listeners
+        function setupEventListeners() {
+            // Bin count controls
+            const decreaseBtn = document.getElementById('decreaseBinCount');
+            const increaseBtn = document.getElementById('increaseBinCount');
+            const binCountInput = document.getElementById('binCount');
+
+            if (decreaseBtn && binCountInput) {
+                decreaseBtn.addEventListener('click', function() {
+                    const currentValue = parseInt(binCountInput.value);
+                    if (currentValue > 0) {
+                        binCountInput.value = currentValue - 1;
+                    }
+                });
+            }
+
+            if (increaseBtn && binCountInput) {
+                increaseBtn.addEventListener('click', function() {
+                    const currentValue = parseInt(binCountInput.value);
+                    binCountInput.value = currentValue + 1;
+                });
+            }
+
+            // Add new bin button
+            const addNewBinBtn = document.getElementById('addNewBinBtn');
+            if (addNewBinBtn) {
+                addNewBinBtn.addEventListener('click', function() {
+                    openAddBinModal();
+                });
+            }
+        }
+
+        // Zone Assignment Modal Functions
+        function openZoneAssignmentModal(workerId) {
+            selectedWorkerId = workerId;
+            const modal = document.getElementById('zoneAssignmentModal');
+            modal.classList.remove('hidden');
+            modal.classList.add('flex');
+        }
+
+        function closeZoneAssignmentModal() {
+            const modal = document.getElementById('zoneAssignmentModal');
+            modal.classList.add('hidden');
+            modal.classList.remove('flex');
+            selectedWorkerId = null;
+        }
+
+        function confirmZoneAssignment() {
+            const zoneSelect = document.getElementById('zoneSelect');
+            const selectedZone = zoneSelect.value;
+            
+            if (!selectedZone) {
+                alert('Please select a zone');
+                return;
+            }
+            
+            if (selectedWorkerId) {
+                const selectedZoneObj = zones.find(zone => zone.id === selectedZone);
+                
+                // Update worker in Firebase
+                database.ref(`workers/${selectedWorkerId}`).update({
+                    zone: selectedZoneObj.name,
+                    zoneId: selectedZone
+                }).then(() => {
+                    alert('Zone assigned successfully!');
+                    closeZoneAssignmentModal();
+                }).catch(error => {
+                    console.error('Error assigning zone:', error);
+                    alert('Error assigning zone. Please try again.');
+                });
+            }
+        }
+
+        // Bin Assignment Modal Functions
+        function openBinAssignmentModal(workerId) {
+            selectedWorkerId = workerId;
+            const worker = workers.find(w => w.id === workerId);
+            
+            // Set the zone name in the modal
+            const zoneNameElement = document.getElementById('selectedZoneName');
+            if (zoneNameElement) {
+                zoneNameElement.textContent = worker.zone || 'Not assigned';
+            }
+            
+            // Set current bin count
+            const binCountInput = document.getElementById('binCount');
+            if (binCountInput) {
+                binCountInput.value = worker.assignedBins || 0;
+            }
+            
+            const modal = document.getElementById('binAssignmentModal');
+            modal.classList.remove('hidden');
+            modal.classList.add('flex');
+        }
+
+        function closeBinAssignmentModal() {
+            const modal = document.getElementById('binAssignmentModal');
+            modal.classList.add('hidden');
+            modal.classList.remove('flex');
+            selectedWorkerId = null;
+        }
+
+        function confirmBinAssignment() {
+            const binCountInput = document.getElementById('binCount');
+            const binCount = parseInt(binCountInput.value);
+            
+            if (selectedWorkerId) {
+                const worker = workers.find(w => w.id === selectedWorkerId);
+                
+                if (!worker.zone) {
+                    alert('Please assign a zone to the worker first');
+                    closeBinAssignmentModal();
+                    return;
+                }
+                
+                // Update worker in Firebase
+                database.ref(`workers/${selectedWorkerId}`).update({
+                    assignedBins: binCount,
+                    emptyBins: binCount, // Initially all bins are empty
+                    fullBins: 0
+                }).then(() => {
+                    alert(`${binCount} bins assigned successfully!`);
+                    closeBinAssignmentModal();
+                }).catch(error => {
+                    console.error('Error assigning bins:', error);
+                    alert('Error assigning bins. Please try again.');
+                });
+            }
+        }
+
+        // Listen for bin status changes
+        function setupBinStatusListener() {
+            const binsRef = database.ref('bins');
+            binsRef.on('value', (snapshot) => {
+                if (snapshot.exists()) {
+                    const bins = snapshot.val();
+                    const workerBins = {};
+                    
+                    // Count bins for each worker
+                    Object.values(bins).forEach(bin => {
+                        if (bin.assignedTo) {
+                            if (!workerBins[bin.assignedTo]) {
+                                workerBins[bin.assignedTo] = {
+                                    total: 0,
+                                    empty: 0,
+                                    full: 0
+                                };
+                            }
+                            workerBins[bin.assignedTo].total++;
+                            if (bin.status === 'empty') {
+                                workerBins[bin.assignedTo].empty++;
+                            } else if (bin.status === 'full') {
+                                workerBins[bin.assignedTo].full++;
+                            }
+                        }
+                    });
+                    
+                    // Update worker bin counts
+                    Object.entries(workerBins).forEach(([workerId, counts]) => {
+                        database.ref(`workers/${workerId}`).update({
+                            assignedBins: counts.total,
+                            emptyBins: counts.empty,
+                            fullBins: counts.full
+                        });
+                    });
+                }
+            });
+        }
+
+        // Initialize bin status listener
+        document.addEventListener('DOMContentLoaded', function() {
+            setupBinStatusListener();
+        });
+
+        // Add Bin Modal Functions
+        function openAddBinModal() {
+            const modal = document.getElementById('addBinModal');
+            modal.classList.remove('hidden');
+            modal.classList.add('flex');
+        }
+
+        function closeAddBinModal() {
+            const modal = document.getElementById('addBinModal');
+            modal.classList.add('hidden');
+            modal.classList.remove('flex');
+        }
+
+        function confirmAddBin() {
+            const binLocation = document.getElementById('binLocation').value;
+            const binLatitude = document.getElementById('binLatitude').value;
+            const binLongitude = document.getElementById('binLongitude').value;
+            
+            if (!binLocation || !binLatitude || !binLongitude) {
+                alert('Please fill in all fields');
+                return;
+            }
+            
+            if (selectedWorkerId) {
+                const worker = workers.find(w => w.id === selectedWorkerId);
+                
+                if (!worker.zone) {
+                    alert('Please assign a zone to the worker first');
+                    closeAddBinModal();
+                    return;
+                }
+                
+                // Create new bin in Firebase
+                const newBinRef = database.ref('bins').push();
+                newBinRef.set({
+                    location: binLocation,
+                    lat: parseFloat(binLatitude),
+                    lng: parseFloat(binLongitude),
+                    status: 'empty',
+                    fillLevel: 0,
+                    zone: worker.zone,
+                    zoneId: worker.zoneId,
+                    assignedTo: selectedWorkerId,
+                    createdAt: firebase.database.ServerValue.TIMESTAMP
+                }).then(() => {
+                    alert('New bin added successfully!');
+                    closeAddBinModal();
+                }).catch(error => {
+                    console.error('Error adding bin:', error);
+                    alert('Error adding bin. Please try again.');
+                });
+            }
+        }
+
+        // Zone Management Modal Functions
+        function openZoneManagementModal() {
+            const modal = document.getElementById('zoneManagementModal');
+            modal.classList.remove('hidden');
+            modal.classList.add('flex');
+            renderZonesList();
+        }
+
+        function closeZoneManagementModal() {
+            const modal = document.getElementById('zoneManagementModal');
+            modal.classList.add('hidden');
+            modal.classList.remove('flex');
+        }
+
+        function addNewZone() {
+            const zoneName = document.getElementById('zoneName').value.trim();
+            const zoneDescription = document.getElementById('zoneDescription').value.trim();
+            
+            if (!zoneName) {
+                alert('Please enter a zone name');
+                return;
+            }
+            
+            // Create new zone in Firebase
+            const newZoneRef = database.ref('zones').push();
+            newZoneRef.set({
+                name: zoneName,
+                description: zoneDescription,
+                createdAt: firebase.database.ServerValue.TIMESTAMP
+            }).then(() => {
+                alert('Zone added successfully!');
+                document.getElementById('zoneName').value = '';
+                document.getElementById('zoneDescription').value = '';
+                renderZonesList();
+                populateZoneSelect();
+            }).catch(error => {
+                console.error('Error adding zone:', error);
+                alert('Error adding zone. Please try again.');
+            });
+        }
+
+        function renderZonesList() {
+            const zonesListElement = document.getElementById('zonesList');
+            if (!zonesListElement) return;
+            
+            if (zones.length === 0) {
+                zonesListElement.innerHTML = '<p class="text-gray-500 text-center py-2">No zones found. Add your first zone above.</p>';
+                return;
+            }
+            
+            zonesListElement.innerHTML = zones.map(zone => `
+                <div class="flex items-center justify-between p-3 bg-gray-50 rounded-md">
+                    <div>
+                        <h5 class="font-medium text-gray-900">${zone.name}</h5>
+                        <p class="text-sm text-gray-500">${zone.description || 'No description'}</p>
+                    </div>
+                    <div class="flex items-center space-x-2">
+                        <button onclick="editZone('${zone.id}')" class="text-blue-600 hover:text-blue-800 transition-colors duration-200">
+                            <i class="fas fa-edit"></i>
+                        </button>
+                        <button onclick="deleteZone('${zone.id}')" class="text-red-600 hover:text-red-800 transition-colors duration-200">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function deleteZone(zoneId) {
+            if (confirm('Are you sure you want to delete this zone? This action cannot be undone.')) {
+                database.ref(`zones/${zoneId}`).remove()
+                    .then(() => {
+                        alert('Zone deleted successfully!');
+                        renderZonesList();
+                        populateZoneSelect();
+                    })
+                    .catch(error => {
+                        console.error('Error deleting zone:', error);
+                        alert('Error deleting zone. Please try again.');
+                    });
+            }
+        }
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,761 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EcoBin - Settings</title>
+    <link rel="stylesheet" href="./dist/output.css">
+    <link rel="stylesheet" href="./dist/enhanced-styles.css">
+    <script src="./dist/ui-enhancements.js" defer></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <!-- Add Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-auth.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
+    <style>
+        /* Custom styles for notification */
+        .notification-bar {
+            background-color: #D1F2EB;
+            color: #013220;
+            padding: 10px;
+            margin-bottom: 10px;
+            border-radius: 0.25rem;
+            display: none;
+        }
+
+        /* Dark mode styles */
+        .dark {
+            background-color: #1a1a1a;
+            color: #ffffff;
+        }
+        .dark .bg-white {
+            background-color: #2d2d2d;
+            color: #ffffff;
+        }
+        .dark .text-gray-900 {
+            color: #ffffff;
+        }
+        .dark .text-gray-600 {
+            color: #d1d1d1;
+        }
+        .dark .text-gray-500 {
+            color: #a0a0a0;
+        }
+        .dark .border-gray-200 {
+            border-color: #404040;
+        }
+        .dark .shadow-md {
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.3);
+        }
+        .dark .bg-swachh-800 {
+            background-color: #1a1a1a;
+        }
+        .dark .hover\:bg-swachh-700:hover {
+            background-color: #2d2d2d;
+        }
+        .dark .bg-gray-50 {
+            background-color: #1a1a1a;
+        }
+        .dark .bg-gray-100 {
+            background-color: #2d2d2d;
+        }
+        .dark .text-gray-800 {
+            color: #ffffff;
+        }
+        .dark .bg-gray-50 {
+            background-color: #1a1a1a;
+        }
+        .dark .divide-gray-200 > * {
+            border-color: #404040;
+        }
+        .dark .border-gray-300 {
+            border-color: #404040;
+        }
+        /* Worker status card dark mode styles */
+        .dark .bg-yellow-50 {
+            background-color: #1a1a1a !important;
+        }
+        .dark .bg-red-50 {
+            background-color: #1a1a1a !important;
+        }
+        .dark .bg-swachh-50 {
+            background-color: #1a1a1a !important;
+        }
+        .dark .bg-gray-200 {
+            background-color: #404040;
+        }
+        .dark .hover\:bg-gray-300:hover {
+            background-color: #525252;
+        }
+        .dark .bg-blue-600 {
+            background-color: #2563eb;
+        }
+        .dark .hover\:bg-blue-700:hover {
+            background-color: #1d4ed8;
+        }
+        .dark .bg-swachh-600 {
+            background-color: #059669;
+        }
+        .dark .hover\:bg-swachh-700:hover {
+            background-color: #047857;
+        }
+        .dark .bg-black {
+            background-color: #000000;
+        }
+        .dark .hover\:bg-gray-900:hover {
+            background-color: #1a1a1a;
+        }
+        .dark .focus\:ring-swachh-500:focus {
+            --tw-ring-color: #10b981;
+        }
+        .dark .bg-gray-800 {
+            background-color: #1a1a1a;
+        }
+        .dark .bg-gray-900 {
+            background-color: #000000;
+        }
+        .dark .bg-gray-700 {
+            background-color: #2d2d2d;
+        }
+        .dark .text-white {
+            color: #ffffff;
+        }
+        .dark .text-gray-100 {
+            color: #f3f3f3;
+        }
+        .dark .text-gray-200 {
+            color: #e5e5e5;
+        }
+        .dark .text-gray-300 {
+            color: #d1d1d1;
+        }
+        .dark .text-gray-400 {
+            color: #a0a0a0;
+        }
+        .dark .border-gray-600 {
+            border-color: #505050;
+        }
+        .dark .border-gray-700 {
+            border-color: #404040;
+        }
+        /* Modal overlay styles */
+        .dark .bg-black.bg-opacity-50 {
+            background-color: rgba(0, 0, 0, 0.5);
+        }
+        .dark .bg-black.bg-opacity-75 {
+            background-color: rgba(0, 0, 0, 0.75);
+        }
+        /* Select dropdown styles for dark mode */
+        .dark select {
+            background-color: #2d2d2d;
+            color: #ffffff;
+            border-color: #404040;
+        }
+        .dark select option {
+            background-color: #2d2d2d;
+            color: #ffffff;
+        }
+        .dark select:focus {
+            border-color: #10b981;
+            box-shadow: 0 0 0 2px rgba(16, 185, 129, 0.2);
+        }
+        /* Bin assignment modal styles for dark mode */
+        .dark input[type="number"] {
+            background-color: #2d2d2d;
+            color: #ffffff;
+            border-color: #404040;
+        }
+        .dark input[type="number"]:focus {
+            border-color: #10b981;
+            box-shadow: 0 0 0 2px rgba(16, 185, 129, 0.2);
+        }
+        .dark .bg-gray-200 {
+            background-color: #404040;
+        }
+        .dark .hover\:bg-gray-300:hover {
+            background-color: #525252;
+        }
+        .dark .border-gray-300 {
+            border-color: #404040;
+        }
+        /* Manage zones modal styles for dark mode */
+        .dark input[type="text"] {
+            background-color: #2d2d2d;
+            color: #ffffff;
+            border-color: #404040;
+        }
+        .dark textarea {
+            background-color: #2d2d2d;
+            color: #ffffff;
+            border-color: #404040;
+        }
+        .dark input[type="text"]:focus,
+        .dark textarea:focus {
+            border-color: #10b981;
+            box-shadow: 0 0 0 2px rgba(16, 185, 129, 0.2);
+        }
+        .dark .bg-gray-50 {
+            background-color: #1a1a1a;
+        }
+        .dark .border-gray-200 {
+            border-color: #404040;
+        }
+
+        /* Light mode styles */
+        .bg-swachh-800 {
+            background-color: #013220;
+        }
+        .hover\:bg-swachh-700:hover {
+            background-color: #0B6E4F;
+        }
+        .bg-swachh-700 {
+            background-color: #0B6E4F;
+        }
+        .bg-swachh-600 {
+            background-color: #50C878;
+        }
+        .text-swachh-600 {
+            color: #50C878;
+        }
+        .bg-swachh-100 {
+            background-color: #D1F2EB;
+        }
+        .text-swachh-800 {
+            color: #013220;
+        }
+        .border-swachh-600 {
+            border-color: #50C878;
+        }
+        /* Admin profile text color */
+        .text-gray-700 {
+            color: #10b981;
+        }
+    </style>
+</head>
+
+<body class="bg-gray-50">
+    <div class="min-h-screen flex">
+        <div class="bg-swachh-800 text-white w-64 space-y-6 py-7 px-2 absolute inset-y-0 left-0 transform -translate-x-full md:relative md:translate-x-0 transition duration-200 ease-in-out">
+            <div class="flex items-center space-x-2 px-4">
+                <i class="fas fa-trash-alt text-2xl"></i>
+                <span class="text-2xl font-extrabold">EcoBin</span>
+            </div>
+            <nav class="space-y-2">
+                <a href="dashboard.html" class="block py-2.5 px-4 rounded transition duration-200 hover:bg-swachh-700 hover:text-white">
+                    <i class="fas fa-home mr-2"></i>Dashboard
+                </a>
+                <a href="bin-locations.html" class="block py-2.5 px-4 rounded transition duration-200 hover:bg-swachh-700 hover:text-white">
+                    <i class="fas fa-map-marker-alt mr-2"></i>Bin Locations
+                </a>
+                <a href="workers.html" class="block py-2.5 px-4 rounded transition duration-200 hover:bg-swachh-700 hover:text-white">
+                    <i class="fas fa-users mr-2"></i>Workers
+                </a>
+                <a href="analytics.html" class="block py-2.5 px-4 rounded transition duration-200 hover:bg-swachh-700 hover:text-white">
+                    <i class="fas fa-chart-bar mr-2"></i>Analytics
+                </a>
+                <a href="settings.html" class="block py-2.5 px-4 rounded transition duration-200 bg-swachh-700">
+                    <i class="fas fa-cog mr-2"></i>Settings
+                </a>
+            </nav>
+        </div>
+
+        <div class="flex-1">
+            <div class="bg-white shadow-lg">
+                <div class="flex items-center justify-between p-4">
+                    <button class="md:hidden text-gray-500 hover:text-gray-600">
+                        <i class="fas fa-bars text-xl"></i>
+                    </button>
+                    <div class="flex items-center space-x-4">
+                        <a href="settings.html" class="flex items-center space-x-2 hover:text-swachh-600 transition-colors duration-200">
+                            <span class="text-gray-800">Admin User</span>
+                            <img class="h-8 w-8 rounded-full" src="https://ui-avatars.com/api/?name=Admin+User&background=22c55e&color=fff" alt="Admin">
+                        </a>
+                        <button id="logoutBtn" class="text-gray-600 hover:text-red-500 transition-colors duration-200">
+                            <i class="fas fa-sign-out-alt text-xl"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="p-6">
+                <h1 class="text-2xl font-semibold text-gray-900 mb-6">Settings</h1>
+
+                <!-- Tabs -->
+                <div class="mb-6 border-b border-gray-200">
+                    <ul class="flex flex-wrap -mb-px text-sm font-medium text-center" id="settingsTabs" role="tablist">
+                        <li class="mr-2" role="presentation">
+                            <button class="inline-block p-4 border-b-2 border-swachh-600 text-swachh-600 active" 
+                                    id="admin-tab" 
+                                    data-tab="admin" 
+                                    type="button" 
+                                    role="tab" 
+                                    aria-controls="admin" 
+                                    aria-selected="true">
+                                Admin Profile
+                            </button>
+                        </li>
+                        <li class="mr-2" role="presentation">
+                            <button class="inline-block p-4 border-b-2 border-transparent hover:border-gray-300 hover:text-gray-600" 
+                                    id="areas-tab" 
+                                    data-tab="areas" 
+                                    type="button" 
+                                    role="tab" 
+                                    aria-controls="areas" 
+                                    aria-selected="false">
+                                Area Management
+                            </button>
+                        </li>
+                        <li class="mr-2" role="presentation">
+                            <button class="inline-block p-4 border-b-2 border-transparent hover:border-gray-300 hover:text-gray-600" 
+                                    id="workers-tab" 
+                                    data-tab="workers" 
+                                    type="button" 
+                                    role="tab" 
+                                    aria-controls="workers" 
+                                    aria-selected="false">
+                                Worker Management
+                            </button>
+                        </li>
+                    </ul>
+                </div>
+
+                <!-- Tab Content -->
+                <div id="tabContent">
+                    <!-- Admin Profile Tab -->
+                    <div id="admin-content" class="tab-pane active">
+                        <div class="bg-white rounded-lg shadow-md p-6 mb-6">
+                            <div class="flex items-center space-x-4 mb-6">
+                                <img src="https://ui-avatars.com/api/?name=Admin+User&size=128&background=22c55e&color=fff" 
+                                     alt="Admin Profile" 
+                                     class="w-32 h-32 rounded-full">
+                                <div>
+                                    <h2 class="text-2xl font-bold text-gray-900">Admin User</h2>
+                                    <p class="text-gray-600">Administrator ID: ADM001</p>
+                                    <p class="text-gray-600">Area: Civil Lines, Prayagraj</p>
+                                </div>
+                            </div>
+                            
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                <div>
+                                    <h3 class="text-lg font-semibold mb-4">Personal Information</h3>
+                                    <div class="space-y-3">
+                                        <div>
+                                            <label class="block text-sm font-medium text-gray-700">Full Name</label>
+                                            <p class="mt-1 text-gray-900">Admin User</p>
+                                        </div>
+                                        <div>
+                                            <label class="block text-sm font-medium text-gray-700">Date of Birth</label>
+                                            <p class="mt-1 text-gray-900">January 1, 1985</p>
+                                        </div>
+                                        <div>
+                                            <label class="block text-sm font-medium text-gray-700">Email</label>
+                                            <p class="mt-1 text-gray-900">admin@ecobin.com</p>
+                                        </div>
+                                        <div>
+                                            <label class="block text-sm font-medium text-gray-700">Phone</label>
+                                            <p class="mt-1 text-gray-900">+91 9876543210</p>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div>
+                                    <h3 class="text-lg font-semibold mb-4">Administrative Details</h3>
+                                    <div class="space-y-3">
+                                        <div>
+                                            <label class="block text-sm font-medium text-gray-700">Admin ID</label>
+                                            <p class="mt-1 text-gray-900">ADM001</p>
+                                        </div>
+                                        <div>
+                                            <label class="block text-sm font-medium text-gray-700">Assigned Area</label>
+                                            <p class="mt-1 text-gray-900">Civil Lines, Prayagraj</p>
+                                        </div>
+                                        <div>
+                                            <label class="block text-sm font-medium text-gray-700">Role</label>
+                                            <p class="mt-1 text-gray-900">Area Administrator</p>
+                                        </div>
+                                        <div>
+                                            <label class="block text-sm font-medium text-gray-700">Join Date</label>
+                                            <p class="mt-1 text-gray-900">January 1, 2020</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="mt-6">
+                                <button class="px-4 py-2 bg-swachh-600 text-white rounded hover:bg-swachh-700">
+                                    Edit Profile
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Area Management Tab -->
+                    <div id="areas-content" class="tab-pane hidden">
+                        <div class="bg-white rounded-lg shadow-md p-6 mb-6">
+                            <h2 class="text-xl font-semibold mb-4">Prayagraj City Areas</h2>
+                            
+                            <div class="mb-6">
+                                <div class="flex justify-between items-center mb-4">
+                                    <h3 class="text-lg font-medium">Area Overview</h3>
+                                    <button class="px-4 py-2 bg-swachh-600 text-white rounded hover:bg-swachh-700">
+                                        Add New Area
+                                    </button>
+                                </div>
+                                
+                                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                                    <div class="bg-gray-50 p-4 rounded-lg">
+                                        <h4 class="font-medium">Civil Lines</h4>
+                                        <p class="text-sm text-gray-600">Admin: Admin User</p>
+                                        <p class="text-sm text-gray-600">Bins: 25</p>
+                                        <p class="text-sm text-gray-600">Workers: 8</p>
+                                    </div>
+                                    <div class="bg-gray-50 p-4 rounded-lg">
+                                        <h4 class="font-medium">George Town</h4>
+                                        <p class="text-sm text-gray-600">Admin: Priya Singh</p>
+                                        <p class="text-sm text-gray-600">Bins: 18</p>
+                                        <p class="text-sm text-gray-600">Workers: 6</p>
+                                    </div>
+                                    <div class="bg-gray-50 p-4 rounded-lg">
+                                        <h4 class="font-medium">Katra</h4>
+                                        <p class="text-sm text-gray-600">Admin: Amit Patel</p>
+                                        <p class="text-sm text-gray-600">Bins: 15</p>
+                                        <p class="text-sm text-gray-600">Workers: 5</p>
+                                    </div>
+                                    <div class="bg-gray-50 p-4 rounded-lg">
+                                        <h4 class="font-medium">Daryabad</h4>
+                                        <p class="text-sm text-gray-600">Admin: Sneha Sharma</p>
+                                        <p class="text-sm text-gray-600">Bins: 12</p>
+                                        <p class="text-sm text-gray-600">Workers: 4</p>
+                                    </div>
+                                    <div class="bg-gray-50 p-4 rounded-lg">
+                                        <h4 class="font-medium">Minto Park</h4>
+                                        <p class="text-sm text-gray-600">Admin: Vikram Malhotra</p>
+                                        <p class="text-sm text-gray-600">Bins: 10</p>
+                                        <p class="text-sm text-gray-600">Workers: 3</p>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div>
+                                <h3 class="text-lg font-medium mb-4">Area Administrators</h3>
+                                <div class="overflow-x-auto">
+                                    <table class="min-w-full divide-y divide-gray-200">
+                                        <thead class="bg-gray-50">
+                                            <tr>
+                                                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Name</th>
+                                                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Admin ID</th>
+                                                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Area</th>
+                                                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Contact</th>
+                                                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody class="bg-white divide-y divide-gray-200">
+                                            <tr>
+                                                <td class="px-6 py-4 whitespace-nowrap">
+                                                    <div class="flex items-center">
+                                                        <div class="flex-shrink-0 h-10 w-10">
+                                                            <img class="h-10 w-10 rounded-full" src="https://ui-avatars.com/api/?name=Admin+User&background=22c55e&color=fff" alt="">
+                                                        </div>
+                                                        <div class="ml-4">
+                                                            <div class="text-sm font-medium text-gray-900">Admin User</div>
+                                                        </div>
+                                                    </div>
+                                                </td>
+                                                <td class="px-6 py-4 whitespace-nowrap">
+                                                    <div class="text-sm text-gray-900">ADM001</div>
+                                                </td>
+                                                <td class="px-6 py-4 whitespace-nowrap">
+                                                    <div class="text-sm text-gray-900">Civil Lines</div>
+                                                </td>
+                                                <td class="px-6 py-4 whitespace-nowrap">
+                                                    <div class="text-sm text-gray-900">+91 9876543210</div>
+                                                </td>
+                                                <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                                                    <button class="text-swachh-600 hover:text-swachh-900 mr-3">Edit</button>
+                                                    <button class="text-red-600 hover:text-red-900">Remove</button>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td class="px-6 py-4 whitespace-nowrap">
+                                                    <div class="flex items-center">
+                                                        <div class="flex-shrink-0 h-10 w-10">
+                                                            <img class="h-10 w-10 rounded-full" src="https://ui-avatars.com/api/?name=Priya+Singh&background=22c55e&color=fff" alt="">
+                                                        </div>
+                                                        <div class="ml-4">
+                                                            <div class="text-sm font-medium text-gray-900">Priya Singh</div>
+                                                        </div>
+                                                    </div>
+                                                </td>
+                                                <td class="px-6 py-4 whitespace-nowrap">
+                                                    <div class="text-sm text-gray-900">ADM002</div>
+                                                </td>
+                                                <td class="px-6 py-4 whitespace-nowrap">
+                                                    <div class="text-sm text-gray-900">George Town</div>
+                                                </td>
+                                                <td class="px-6 py-4 whitespace-nowrap">
+                                                    <div class="text-sm text-gray-900">+91 9876543211</div>
+                                                </td>
+                                                <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                                                    <button class="text-swachh-600 hover:text-swachh-900 mr-3">Edit</button>
+                                                    <button class="text-red-600 hover:text-red-900">Remove</button>
+                                                </td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Worker Management Tab -->
+                    <div id="workers-content" class="tab-pane hidden">
+                        <div class="bg-white rounded-lg shadow-md p-6 mb-6">
+                            <div class="flex justify-between items-center mb-6">
+                                <h2 class="text-xl font-semibold">Worker Management</h2>
+                                <button class="px-4 py-2 bg-swachh-600 text-white rounded hover:bg-swachh-700">
+                                    <i class="fas fa-plus mr-2"></i>Hire New Worker
+                                </button>
+                            </div>
+                            
+                            <div class="mb-6">
+                                <h3 class="text-lg font-medium mb-4">Worker Status</h3>
+                                <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                                    <div class="bg-swachh-50 p-4 rounded-lg">
+                                        <div class="flex items-center">
+                                            <div class="p-3 rounded-full bg-swachh-100 text-swachh-500 mr-4">
+                                                <i class="fas fa-user-check text-2xl"></i>
+                                            </div>
+                                            <div>
+                                                <p class="text-sm text-gray-600 dark:text-gray-300">Active Workers</p>
+                                                <p class="text-2xl font-semibold text-black dark:text-white" id="activeWorkersCount">0</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="bg-yellow-50 p-4 rounded-lg dark:bg-[rgb(107,104,72)]">
+                                        <div class="flex items-center">
+                                            <div class="p-3 rounded-full bg-yellow-100 text-yellow-500 mr-4">
+                                                <i class="fas fa-user-clock text-2xl"></i>
+                                            </div>
+                                            <div>
+                                                <p class="text-sm text-gray-600 dark:text-gray-300">Assigned Workers</p>
+                                                <p class="text-2xl font-semibold text-black dark:text-white" id="assignedWorkersCount">0</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="bg-red-50 p-4 rounded-lg dark:bg-[rgb(141,78,78)]">
+                                        <div class="flex items-center">
+                                            <div class="p-3 rounded-full bg-red-100 text-red-500 mr-4">
+                                                <i class="fas fa-user-times text-2xl"></i>
+                                            </div>
+                                            <div>
+                                                <p class="text-sm text-gray-600 dark:text-gray-300">Fired Workers</p>
+                                                <p class="text-2xl font-semibold text-black dark:text-white" id="firedWorkersCount">0</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div>
+                                <h3 class="text-lg font-medium mb-4">Worker Actions</h3>
+                                <div class="overflow-x-auto">
+                                    <table class="min-w-full divide-y divide-gray-200">
+                                        <thead class="bg-gray-50">
+                                            <tr>
+                                                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Worker</th>
+                                                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">ID</th>
+                                                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
+                                                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Assigned To</th>
+                                                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody class="bg-white divide-y divide-gray-200" id="workerActionsTable">
+                                            <!-- Worker rows will be dynamically added here -->
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Add this before your Firebase script initialization -->
+    <script src="./config.js"></script>
+    
+    <script>
+        // Firebase configuration
+        const firebaseConfig = firebaseConfigs.settings;
+    
+        // Initialize Firebase
+        firebase.initializeApp(firebaseConfig);
+        const database = firebase.database();
+        
+        // Load workers from Firebase
+        function loadWorkers() {
+            console.log("Loading workers from Firebase...");
+            
+            // Set up real-time listener for workers
+            const workersRef = database.ref('workers');
+            workersRef.on('value', (snapshot) => {
+                console.log("Workers data updated");
+                const workersList = document.getElementById('workerActionsTable');
+                workersList.innerHTML = '';
+                let activeCount = 0;
+                let assignedCount = 0;
+                let firedCount = 0;
+                
+                if (snapshot.exists()) {
+                    snapshot.forEach((childSnapshot) => {
+                        const worker = childSnapshot.val();
+                        worker.id = childSnapshot.key;
+                        console.log("Worker loaded:", worker.name, worker.workerId, worker.status);
+                        
+                        // Count workers by status
+                        if (!worker.status || worker.status === 'active') {
+                            activeCount++;
+                            if (worker.zone) {
+                                assignedCount++;
+                            }
+                        } else if (worker.status === 'fired') {
+                            firedCount++;
+                        }
+
+                        const row = document.createElement('tr');
+                        row.innerHTML = `
+                            <td class="px-6 py-4 whitespace-nowrap">
+                                <div class="flex items-center">
+                                    <div class="flex-shrink-0 h-10 w-10">
+                                        <img class="h-10 w-10 rounded-full" src="https://ui-avatars.com/api/?name=${encodeURIComponent(worker.name)}&background=22c55e&color=fff" alt="">
+                                    </div>
+                                    <div class="ml-4">
+                                        <div class="text-sm font-medium text-gray-900">${worker.name}</div>
+                                    </div>
+                                </div>
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap">
+                                <div class="text-sm text-gray-900">${worker.workerId}</div>
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap">
+                                <span class="px-2 py-1 inline-flex text-xs leading-5 font-semibold rounded-full ${
+                                    !worker.status || worker.status === 'active' ? 'bg-swachh-100 text-swachh-800' : 
+                                    worker.status === 'fired' ? 'bg-red-100 text-red-800' : 
+                                    'bg-yellow-100 text-yellow-800'
+                                }">
+                                    ${worker.status || 'Active'}
+                                </span>
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap">
+                                <div class="text-sm text-gray-900">${worker.zone || 'Not Assigned'}</div>
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                                ${!worker.status || worker.status === 'active' ? `
+                                <button onclick="fireWorker('${worker.id}')" class="text-red-600 hover:text-red-900">
+                                    Fire Worker
+                                </button>
+                                ` : `
+                                <button onclick="rehireWorker('${worker.id}')" class="text-swachh-600 hover:text-swachh-900">
+                                    Rehire
+                                </button>
+                                `}
+                            </td>
+                        `;
+                        
+                        workersList.appendChild(row);
+                    });
+                } else {
+                    console.log("No workers found in database");
+                    workersList.innerHTML = `
+                        <tr>
+                            <td colspan="5" class="px-6 py-4 text-center text-gray-500">
+                                No workers found. Workers will appear here when they register through the app.
+                            </td>
+                        </tr>
+                    `;
+                }
+
+                // Update counters
+                document.getElementById('activeWorkersCount').textContent = activeCount;
+                document.getElementById('assignedWorkersCount').textContent = assignedCount;
+                document.getElementById('firedWorkersCount').textContent = firedCount;
+            }, (error) => {
+                console.error("Error loading workers:", error);
+                const workersList = document.getElementById('workerActionsTable');
+                workersList.innerHTML = `
+                    <tr>
+                        <td colspan="5" class="px-6 py-4 text-center text-red-500">
+                            Error loading workers data. Please check console for details.
+                        </td>
+                    </tr>
+                `;
+            });
+        }
+
+        // Function to fire a worker
+        function fireWorker(workerId) {
+            if (confirm('Are you sure you want to fire this worker?')) {
+                database.ref('workers').child(workerId).update({
+                    status: 'fired',
+                    firedAt: firebase.database.ServerValue.TIMESTAMP
+                }).then(() => {
+                    alert('Worker fired successfully');
+                }).catch((error) => {
+                    alert('Error firing worker: ' + error.message);
+                });
+            }
+        }
+
+        // Function to rehire a worker
+        function rehireWorker(workerId) {
+            if (confirm('Are you sure you want to rehire this worker?')) {
+                database.ref('workers').child(workerId).update({
+                    status: 'active',
+                    rehiredAt: firebase.database.ServerValue.TIMESTAMP
+                }).then(() => {
+                    alert('Worker rehired successfully');
+                }).catch((error) => {
+                    alert('Error rehiring worker: ' + error.message);
+                });
+            }
+        }
+
+        // Load workers when workers tab is selected
+        document.getElementById('workers-tab').addEventListener('click', loadWorkers);
+
+        // Tab switching functionality
+        document.querySelectorAll('#settingsTabs button').forEach(button => {
+            button.addEventListener('click', function() {
+                // Remove active class from all tabs
+                document.querySelectorAll('#settingsTabs button').forEach(btn => {
+                    btn.classList.remove('border-swachh-600', 'text-swachh-600');
+                    btn.classList.add('border-transparent', 'hover:border-gray-300', 'hover:text-gray-600');
+                });
+
+                // Add active class to clicked tab
+                this.classList.remove('border-transparent', 'hover:border-gray-300', 'hover:text-gray-600');
+                this.classList.add('border-swachh-600', 'text-swachh-600');
+
+                // Hide all tab content
+                document.querySelectorAll('.tab-pane').forEach(pane => {
+                    pane.classList.add('hidden');
+                });
+
+                // Show selected tab content
+                const tabId = this.getAttribute('data-tab');
+                document.getElementById(`${tabId}-content`).classList.remove('hidden');
+            });
+        });
+    </script>
+    <script>
+  // Make sure sidebar enhancements are applied
+  document.addEventListener('DOMContentLoaded', function() {
+    if (typeof enhanceSidebar === 'function') {
+      enhanceSidebar();
+    }
+  });
+</script>
+</body>
+
+</html>
