@@ -6,6 +6,81 @@
     <title>EcoBin - Login</title>
     <link rel="stylesheet" href="./dist/output.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        /* Custom color variables */
+        :root {
+            --primary-dark: #013220;
+            --primary-medium: #0B6E4F;
+            --primary-light: #50C878;
+            --background-light: #D1F2EB;
+        }
+
+        /* Dark mode styles */
+        .dark {
+            background-color: var(--primary-dark);
+            color: #ffffff;
+        }
+        .dark .bg-white {
+            background-color: var(--primary-medium);
+            color: #ffffff;
+        }
+        .dark .text-gray-900 {
+            color: #ffffff;
+        }
+        .dark .text-gray-600 {
+            color: #d1d1d1;
+        }
+        .dark .text-gray-500 {
+            color: #a0a0a0;
+        }
+        .dark .border-gray-200 {
+            border-color: var(--primary-medium);
+        }
+        .dark .shadow-md {
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.3);
+        }
+        .dark .bg-swachh-800 {
+            background-color: var(--primary-dark);
+        }
+        .dark .hover\:bg-swachh-700:hover {
+            background-color: var(--primary-medium);
+        }
+        .dark .bg-gray-50 {
+            background-color: var(--primary-dark);
+        }
+        .dark .bg-gray-100 {
+            background-color: var(--primary-medium);
+        }
+        .dark .text-gray-800 {
+            color: #ffffff;
+        }
+
+        /* Light mode styles */
+        .bg-swachh-800 {
+            background-color: var(--primary-dark);
+        }
+        .hover\:bg-swachh-700:hover {
+            background-color: var(--primary-medium);
+        }
+        .bg-swachh-700 {
+            background-color: var(--primary-medium);
+        }
+        .bg-swachh-600 {
+            background-color: var(--primary-light);
+        }
+        .text-swachh-600 {
+            color: var(--primary-light);
+        }
+        .bg-swachh-100 {
+            background-color: var(--background-light);
+        }
+        .text-swachh-800 {
+            color: var(--primary-dark);
+        }
+        .border-swachh-600 {
+            border-color: var(--primary-light);
+        }
+    </style>
 </head>
 <body class="bg-gray-50">
     <div class="min-h-screen flex items-center justify-center">

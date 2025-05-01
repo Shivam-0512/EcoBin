@@ -6,10 +6,23 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>EcoBin - Bin Locations</title>
     <link rel="stylesheet" href="./dist/output.css">
+    <link rel="stylesheet" href="./dist/enhanced-styles.css">
+    <script src="./dist/ui-enhancements.js" defer></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" />
+    <link rel="stylesheet" href="./dist/map-styles.css" />
     <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
     <style>
+        /* Custom styles for notification */
+        .notification-bar {
+            background-color: #D1F2EB;
+            color: #013220;
+            padding: 10px;
+            margin-bottom: 10px;
+            border-radius: 0.25rem;
+            display: none;
+        }
+
         /* Dark mode styles */
         .dark {
             background-color: #1a1a1a;
@@ -35,10 +48,10 @@
             box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.3);
         }
         .dark .bg-swachh-800 {
-            background-color: #1a472a;
+            background-color: #1a1a1a;
         }
         .dark .hover\:bg-swachh-700:hover {
-            background-color: #2d5a3f;
+            background-color: #2d2d2d;
         }
         .dark .bg-gray-50 {
             background-color: #1a1a1a;
@@ -48,6 +61,32 @@
         }
         .dark .text-gray-800 {
             color: #ffffff;
+        }
+
+        /* Light mode styles */
+        .bg-swachh-800 {
+            background-color: #013220;
+        }
+        .hover\:bg-swachh-700:hover {
+            background-color: #0B6E4F;
+        }
+        .bg-swachh-700 {
+            background-color: #0B6E4F;
+        }
+        .bg-swachh-600 {
+            background-color: #50C878;
+        }
+        .text-swachh-600 {
+            color: #50C878;
+        }
+        .bg-swachh-100 {
+            background-color: #D1F2EB;
+        }
+        .text-swachh-800 {
+            color: #013220;
+        }
+        .border-swachh-600 {
+            border-color: #50C878;
         }
     </style>
 </head>
@@ -69,7 +108,7 @@
                 <a href="workers.html" class="block py-2.5 px-4 rounded transition duration-200 hover:bg-swachh-700 hover:text-white">
                     <i class="fas fa-users mr-2"></i>Workers
                 </a>
-                <a href="#" class="block py-2.5 px-4 rounded transition duration-200 hover:bg-swachh-700 hover:text-white">
+                <a href="analytics.html" class="block py-2.5 px-4 rounded transition duration-200 hover:bg-swachh-700 hover:text-white">
                     <i class="fas fa-chart-bar mr-2"></i>Analytics
                 </a>
                 <a href="settings.html" class="block py-2.5 px-4 rounded transition duration-200 hover:bg-swachh-700 hover:text-white">
@@ -119,112 +158,235 @@
     </div>
 
     <script>
-        // Initialize sidebar state
+        // Global variables
+        const bins = [];
+        let map;
+        let markers = {}; // Store markers by bin ID
+
+        // Initialize page on DOM content loaded
         document.addEventListener('DOMContentLoaded', function() {
+            setupUI();
+            setupTheme();
+            initPage();
+            
+            // Apply sidebar enhancements
+            if (typeof enhanceSidebar === 'function') {
+                enhanceSidebar();
+            }
+        });
+
+        // Setup UI components
+        function setupUI() {
+            // Initialize sidebar
             const sidebar = document.querySelector('.bg-swachh-800');
             if (window.innerWidth >= 768) { // md breakpoint
                 sidebar.classList.remove('-translate-x-full');
             }
-        });
+            
+            // Toggle sidebar on mobile
+            document.querySelector('button').addEventListener('click', function () {
+                document.querySelector('.bg-swachh-800').classList.toggle('-translate-x-full');
+            });
 
-        // Toggle sidebar on mobile
-        document.querySelector('button').addEventListener('click', function () {
-            document.querySelector('.bg-swachh-800').classList.toggle('-translate-x-full');
-        });
-
-        // Logout functionality
-        document.getElementById('logoutBtn').addEventListener('click', function () {
-            if (confirm('Are you sure you want to logout?')) {
-                window.location.href = 'index.html';
-            }
-        });
-
-        // Sample bin data (replace with Firebase data later)
-        const bins = [
-            { id: 'BIN001', location: 'Prayagraj Station', status: 'full', lat: 25.4358, lng: 81.8463 },
-            { id: 'BIN002', location: 'Civil Lines', status: 'empty', lat: 25.4589, lng: 81.8523 },
-            { id: 'BIN003', location: 'Katara', status: 'full', lat: 25.4422, lng: 81.8339 },
-            { id: 'BIN004', location: 'George Town', status: 'empty', lat: 25.4497, lng: 81.8347 },
-            { id: 'BIN005', location: 'Katra', status: 'full', lat: 25.4389, lng: 81.8456 }
-        ];
-
-        // Initialize map
-        function initMap() {
-            const map = L.map('map').setView([25.4358, 81.8463], 13);
-            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-                attribution: '© OpenStreetMap contributors'
-            }).addTo(map);
-
-            // Add markers for each bin
-            bins.forEach(bin => {
-                const color = bin.status === 'full' ? 'red' : 'green';
-                const marker = L.marker([bin.lat, bin.lng])
-                    .bindPopup(`
-                        <strong>Bin ${bin.id}</strong><br>
-                        Location: ${bin.location}<br>
-                        Status: ${bin.status}
-                    `)
-                    .addTo(map);
+            // Logout functionality
+            document.getElementById('logoutBtn').addEventListener('click', function () {
+                if (confirm('Are you sure you want to logout?')) {
+                    window.location.href = 'index.html';
+                }
             });
         }
 
+        // Setup theme
+        function setupTheme() {
+            // Apply theme
+            const savedTheme = localStorage.getItem('theme');
+            if (savedTheme === 'dark') {
+                document.documentElement.classList.add('dark');
+                document.body.classList.add('dark'); // For compatibility
+            }
+        }
+
+        // Fetch bins data from API
+        async function fetchBins() {
+            try {
+                const response = await fetch('/api/bins');
+                const data = await response.json();
+                return data;
+            } catch (error) {
+                console.error('Error fetching bins:', error);
+                return [];
+            }
+        }
+
+        // Initialize map
+        function initMap(bins) {
+            // Check if map container exists
+            const mapContainer = document.getElementById('map');
+            if (!mapContainer) return;
+            
+            try {
+                // Create the map centered at Prayagraj
+                map = L.map('map').setView([25.4358, 81.8463], 13);
+                
+                // Add the OpenStreetMap tile layer
+                L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                    attribution: '© OpenStreetMap contributors'
+                }).addTo(map);
+
+                // Add markers for each bin
+                bins.forEach(bin => {
+                    addBinToMap(bin);
+                });
+                
+                // Force a map refresh
+                setTimeout(() => map.invalidateSize(), 200);
+            } catch (error) {
+                console.error("Error initializing map:", error);
+            }
+        }
+
+        // Add a bin to the map
+        function addBinToMap(bin) {
+            const color = bin.status === 'full' ? 'red' : 'green';
+            
+            // Create marker
+            const marker = L.circleMarker([bin.lat, bin.lng], {
+                radius: 8,
+                fillColor: color,
+                color: '#fff',
+                weight: 1,
+                opacity: 1,
+                fillOpacity: 0.8
+            }).addTo(map);
+            
+            // Add popup
+            marker.bindPopup(`
+                <div style="padding: 5px; max-width: 200px;">
+                    <h3 style="font-weight: bold; margin-bottom: 5px;">Bin ${bin.id}</h3>
+                    <p style="margin: 5px 0;">Status: <span style="color: ${color};">${bin.status}</span></p>
+                    <p style="margin: 5px 0;">Fill Level: ${bin.fillLevel || 0}%</p>
+                    <p style="margin: 5px 0;">Coordinates: ${bin.lat}, ${bin.lng}</p>
+                </div>
+            `);
+            
+            // Store marker reference
+            markers[bin.id] = marker;
+        }
+
+        // Highlight a bin on the map
+        function highlightBin(binId) {
+            // Reset all markers
+            Object.values(markers).forEach(marker => {
+                marker.setStyle({
+                    radius: 8,
+                    weight: 1
+                });
+            });
+            
+            // Highlight selected bin
+            if (markers[binId]) {
+                markers[binId].setStyle({
+                    radius: 12,
+                    weight: 3
+                });
+                
+                markers[binId].openPopup();
+                
+                // Center map on bin
+                const bin = bins.find(b => b.id === binId);
+                if (bin) {
+                    map.setView([bin.lat, bin.lng], 16);
+                }
+            }
+        }
+
         // Render bin list
-        function renderBinList() {
+        function renderBinList(bins) {
             const binList = document.getElementById('binList');
+            binList.innerHTML = ''; // Clear existing bins
+            
             bins.forEach(bin => {
                 const binElement = document.createElement('div');
-                binElement.className = 'border rounded-lg p-4 hover:bg-gray-50 transition-colors duration-200';
+                binElement.className = 'border rounded-lg p-4 hover:bg-gray-50 transition-colors duration-200 cursor-pointer';
+                binElement.setAttribute('data-bin-id', bin.id);
                 binElement.innerHTML = `
                     <div class="flex items-center justify-between">
                         <div>
                             <h3 class="font-medium text-gray-900">Bin ${bin.id}</h3>
-                            <p class="text-sm text-gray-500">${bin.location}</p>
+                            <p class="text-sm text-gray-500">Coordinates: ${bin.lat}, ${bin.lng}</p>
                         </div>
                         <div class="flex items-center space-x-2">
                             <span class="px-2 py-1 text-xs rounded-full ${bin.status === 'full' ? 'bg-red-100 text-red-800' : 'bg-swachh-100 text-swachh-800'}">
                                 ${bin.status}
                             </span>
-                            <button onclick="toggleBinDetails('${bin.id}')" class="text-gray-400 hover:text-gray-600">
+                            <button class="text-gray-400 hover:text-gray-600">
                                 <i class="fas fa-chevron-down"></i>
                             </button>
                         </div>
                     </div>
                     <div id="details-${bin.id}" class="hidden mt-2 pt-2 border-t">
                         <p class="text-sm text-gray-600">Last cleaned: 2 hours ago</p>
-                        <p class="text-sm text-gray-600">Capacity: 80%</p>
+                        <p class="text-sm text-gray-600">Capacity: ${bin.fillLevel || 0}%</p>
+                        <p class="text-sm text-gray-600">Coordinates: ${bin.lat}, ${bin.lng}</p>
                     </div>
                 `;
+                
+                // Add click event to highlight bin on map
+                binElement.addEventListener('click', function(e) {
+                    // Don't trigger if clicking on the details toggle button
+                    if (e.target.closest('button')) return;
+                    
+                    highlightBin(bin.id);
+                });
+                
+                // Add click event for the details toggle button
+                const toggleBtn = binElement.querySelector('button');
+                toggleBtn.addEventListener('click', function() {
+                    const details = document.getElementById(`details-${bin.id}`);
+                    if (details.classList.contains('hidden')) {
+                        details.classList.remove('hidden');
+                        this.innerHTML = '<i class="fas fa-chevron-up"></i>';
+                    } else {
+                        details.classList.add('hidden');
+                        this.innerHTML = '<i class="fas fa-chevron-down"></i>';
+                    }
+                });
+                
                 binList.appendChild(binElement);
             });
         }
 
-        // Toggle bin details
-        function toggleBinDetails(binId) {
-            const details = document.getElementById(`details-${binId}`);
-            const button = details.previousElementSibling.querySelector('button');
-            if (details.classList.contains('hidden')) {
-                details.classList.remove('hidden');
-                button.innerHTML = '<i class="fas fa-chevron-up"></i>';
-            } else {
-                details.classList.add('hidden');
-                button.innerHTML = '<i class="fas fa-chevron-down"></i>';
-            }
-        }
-
         // Initialize page
-        document.addEventListener('DOMContentLoaded', function() {
-            renderBinList();
-            initMap();
-        });
-
-        // Apply theme on page load
-        document.addEventListener('DOMContentLoaded', function() {
-            const savedTheme = localStorage.getItem('theme');
-            if (savedTheme === 'dark') {
-                document.documentElement.classList.add('dark');
+        async function initPage() {
+            // Fetch bins from API
+            const binsData = await fetchBins();
+            
+            // If API fails, use sample data
+            if (binsData.length === 0) {
+                bins.push(
+                    { id: 'BIN001', status: 'full', lat: 25.4358, lng: 81.8463, fillLevel: 95 },
+                    { id: 'BIN002', status: 'empty', lat: 25.4589, lng: 81.8523, fillLevel: 10 },
+                    { id: 'BIN003', status: 'full', lat: 25.4422, lng: 81.8339, fillLevel: 90 },
+                    { id: 'BIN004', status: 'empty', lat: 25.4497, lng: 81.8347, fillLevel: 5 },
+                    { id: 'BIN005', status: 'full', lat: 25.4389, lng: 81.8456, fillLevel: 85 }
+                );
+            } else {
+                // Map API data to our format
+                binsData.forEach(bin => {
+                    bins.push({
+                        id: bin.id,
+                        status: bin.fillLevel > 80 ? 'full' : 'empty',
+                        lat: bin.lat,
+                        lng: bin.lng,
+                        fillLevel: bin.fillLevel
+                    });
+                });
             }
-        });
+            
+            renderBinList(bins);
+            initMap(bins);
+        }
     </script>
-</body>
+    </body>
 
-</html> 
+</html>

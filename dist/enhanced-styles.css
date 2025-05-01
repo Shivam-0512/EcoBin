@@ -1,0 +1,344 @@
+/* Enhanced color palette */
+:root {
+  --primary-dark: #0B5345;
+  --primary: #16A085;
+  --primary-light: #A3E4D7;
+  --accent: #F39C12;
+  --success: #27AE60;
+  --danger: #E74C3C;
+  --warning: #F1C40F;
+  --dark: #1E272E;
+  --light: #F5F5F5;
+  --gray-dark: #2D3436;
+  --gray: #636E72;
+  --gray-light: #DFE6E9;
+}
+
+/* Light mode enhanced styles */
+.bg-swachh-800 {
+  background-color: var(--primary-dark);
+  background-image: linear-gradient(135deg, var(--primary-dark) 0%, #0E6655 100%);
+}
+
+.hover\:bg-swachh-700:hover {
+  background-color: #0E6655;
+  background-image: linear-gradient(135deg, #0E6655 0%, var(--primary) 100%);
+}
+
+.bg-swachh-700 {
+  background-color: var(--primary);
+  background-image: linear-gradient(135deg, #0E6655 0%, var(--primary) 100%);
+}
+
+.bg-swachh-600 {
+  background-color: var(--primary);
+}
+
+.text-swachh-600 {
+  color: var(--primary);
+}
+
+.bg-swachh-100 {
+  background-color: var(--primary-light);
+}
+
+.text-swachh-800 {
+  color: var(--primary-dark);
+}
+
+.border-swachh-600 {
+  border-color: var(--primary);
+}
+
+/* Card and container enhancements */
+.shadow-md {
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05), 0 1px 3px rgba(0, 0, 0, 0.1);
+  transition: box-shadow 0.3s ease, transform 0.3s ease;
+}
+
+.shadow-md:hover {
+  box-shadow: 0 10px 15px rgba(0, 0, 0, 0.07), 0 5px 10px rgba(0, 0, 0, 0.05);
+  transform: translateY(-2px);
+}
+
+.rounded-lg {
+  
+  border-radius: 0.75rem;
+}
+
+/* Button enhancements */
+button, .btn {
+  transition: all 0.3s ease;
+}
+
+button:hover, .btn:hover {
+  transform: translateY(-1px);
+}
+
+/* Dark mode enhanced styles */
+.dark {
+  background-color: #121212;
+  color: #f5f5f5;
+}
+
+.dark .bg-white {
+  background-color: #1E1E1E;
+  color: #f5f5f5;
+}
+
+.dark .shadow-md {
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2), 0 1px 3px rgba(0, 0, 0, 0.3);
+}
+
+.dark .bg-swachh-800 {
+  background-color: #0B5345;
+  background-image: linear-gradient(135deg, #0B5345 0%, #0E6655 100%);
+}
+
+.dark .hover\:bg-swachh-700:hover {
+  background-color: #0E6655;
+  background-image: linear-gradient(135deg, #0E6655 0%, var(--primary) 100%);
+}
+
+/* Sidebar enhancements */
+.sidebar-link {
+  position: relative;
+  transition: all 0.3s ease;
+  border-radius: 0.5rem;
+  overflow: hidden;
+}
+
+.sidebar-link.active {
+  background-color: rgba(255, 255, 255, 0.1);
+}
+
+/* Add sticky behavior to sidebar on medium screens and up */
+@media (min-width: 768px) {
+  .bg-swachh-800 {
+    position: sticky;
+    top: 0;
+    height: 100vh;
+    overflow-y: auto;
+  }
+}
+
+/* Add yellow highlight bar to active navigation items */
+.sidebar-link.active::before,
+.bg-swachh-700::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0;
+  height: 100%;
+  width: 4px;
+  background-color: var(--accent);
+  border-radius: 0 2px 2px 0;
+}
+
+/* Update the yellow highlight bar selector to target all active navigation links */
+.bg-swachh-800 nav a.bg-swachh-700::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0;
+  height: 100%;
+  width: 4px;
+  background-color: var(--accent);
+  border-radius: 0 2px 2px 0;
+}
+
+/* Make sure all navigation links have position relative for the highlight bar */
+.bg-swachh-800 nav a {
+  position: relative;
+  overflow: hidden;
+}
+
+.sidebar-link:hover:not(.active) {
+  background-color: rgba(255, 255, 255, 0.05);
+}
+
+.sidebar-icon {
+  transition: transform 0.3s ease;
+}
+
+.sidebar-link:hover .sidebar-icon {
+  transform: translateX(3px);
+}
+
+/* Card animations and enhancements */
+.card {
+  transition: all 0.3s ease;
+  border-radius: 0.75rem;
+  overflow: hidden;
+  border: 1px solid transparent;
+}
+
+.card:hover {
+  transform: translateY(-3px);
+  border-color: rgba(22, 160, 133, 0.1);
+}
+
+/* Status indicators */
+.status-indicator {
+  display: inline-block;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  margin-right: 6px;
+  vertical-align: middle; /* Add this to vertically center the dot */
+}
+
+/* For parent elements containing status indicators */
+[class*="bg-red-"], [class*="bg-green-"] {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.status-full {
+  background-color: var(--danger);
+  box-shadow: 0 0 0 rgba(231, 76, 60, 0.4);
+  animation: pulse-red 2s infinite;
+}
+
+.status-empty {
+  background-color: var(--success);
+}
+
+@keyframes pulse-red {
+  0% {
+    box-shadow: 0 0 0 0 rgba(231, 76, 60, 0.4);
+  }
+  70% {
+    box-shadow: 0 0 0 10px rgba(231, 76, 60, 0);
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgba(231, 76, 60, 0);
+  }
+}
+
+/* Improved scrollbars */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: #f1f1f1;
+  border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--primary);
+  border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--primary-dark);
+}
+
+.dark ::-webkit-scrollbar-track {
+  background: var(--gray-dark);
+}
+
+.dark ::-webkit-scrollbar-thumb {
+  background: var(--primary);
+}
+
+/* Analytics page dark mode fixes - with correct selector */
+html.dark .bg-white.rounded-lg.shadow-md,
+html.dark div.bg-white.rounded-lg.shadow-md,
+html.dark .bg-white.rounded-lg.shadow-md.p-6 {
+  background-color: #1E1E1E !important;
+  color: #f5f5f5 !important;
+}
+
+/* Fix table in dark mode with correct selector */
+html.dark table.min-w-full.divide-y.divide-gray-200,
+html.dark thead.bg-gray-50,
+html.dark tbody.bg-white.divide-y.divide-gray-200,
+html.dark tr.bg-white,
+html.dark .bg-gray-50 {
+  background-color: #1E1E1E !important;
+  color: #f5f5f5 !important;
+}
+
+/* Fix text colors with correct selector */
+html.dark h2.text-xl.font-semibold.text-gray-900,
+html.dark .text-gray-500,
+html.dark .text-gray-700.font-medium,
+html.dark span.text-gray-700 {
+  color: #f5f5f5 !important;
+}
+
+/* Fix chart containers with correct selector */
+html.dark canvas#fillTimeChart,
+html.dark canvas#collectionChart {
+  background-color: #1E1E1E !important;
+  border-radius: 0.5rem;
+}
+
+/* Specifically target modals in workers section */
+.dark #zoneAssignmentModal .rounded-lg,
+.dark #binAssignmentModal .rounded-lg,
+.dark #addBinModal .rounded-lg,
+.dark #zoneManagementModal .rounded-lg {
+  background-color: #1E1E1E !important;
+  color: #f5f5f5 !important;
+}
+
+.dark .modal-content,
+.dark .modal-header,
+.dark .modal-body,
+.dark .modal-footer {
+  background-color: #1E1E1E !important;
+  color: #f5f5f5 !important;
+}
+
+/* Ensure text colors are properly set */
+.dark .text-gray-900,
+.dark .text-lg.font-semibold.text-gray-900,
+.dark .text-sm.font-medium.text-gray-700 {
+  color: #f5f5f5 !important;
+}
+
+.dark .text-gray-700,
+.dark .text-gray-600 {
+  color: #d1d1d1 !important;
+}
+
+/* Fix borders and backgrounds */
+.dark .border-gray-200,
+.dark .border-gray-300 {
+  border-color: #404040 !important;
+}
+
+.dark .bg-gray-200 {
+  background-color: #404040 !important;
+}
+
+.dark .hover\:bg-gray-300:hover {
+  background-color: #525252 !important;
+}
+
+.dark .hover\:bg-gray-100:hover {
+  background-color: #2d2d2d !important;
+}
+
+/* Fix for inputs in dark mode */
+.dark input[type="text"],
+.dark input[type="number"],
+.dark textarea,
+.dark select {
+  background-color: #2d2d2d !important;
+  color: #f5f5f5 !important;
+  border-color: #404040 !important;
+}
+
+.dark input[type="text"]:focus,
+.dark input[type="number"]:focus,
+.dark textarea:focus,
+.dark select:focus {
+  border-color: var(--primary) !important;
+  box-shadow: 0 0 0 2px rgba(22, 160, 133, 0.2) !important;
+}
